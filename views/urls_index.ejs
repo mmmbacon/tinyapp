@@ -13,7 +13,7 @@
 
     <%- include('partials/_header.ejs') %>
 
-    <form method="POST" action="/urls/9sm5xK/delete" id="form1"></form>
+    
     
     <h3>My URLs</h3>
 
@@ -22,6 +22,7 @@
         <tr>
           <th scope="col">Short URL</th>
           <th scope="col">Long URL</th>
+          <th scope="col">Edit</th>
           <th scope="col">Delete</th>
         </tr>
       </thead>
@@ -30,7 +31,12 @@
           <tr>
             <td><%= url %></td>
             <td><%= urls[url] %></td>
-            <td><button class="btn btn-outline-danger" type="submit" form="form1" value="Submit">Delete</button></td>
+            <td><a href="/urls/<%= url %>">Edit</a></td>
+            <td>
+              <form method="POST" action="/urls/<%= url %>/delete" id="form1">
+                <button class="btn btn-outline-danger" type="submit" form="form1" value="Submit">Delete</button>
+              </form>
+            </td>
           </tr>
         <% } %>
       </tbody>

@@ -1,0 +1,25 @@
+{
+  "name": "@mmmbacon/tinyapp",
+  "version": "1.0.0",
+  "description": "A tiny URL Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmmbacon/tinyapp.git"
+  },
+  "keywords": [
+    "tiny",
+    "url",
+    "shortener",
+    "app"
+  ],
+  "author": "@mmmbacon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mmmbacon/tinyapp/issues"
+  },
+  "homepage": "https://github.com/mmmbacon/tinyapp#readme"
+}

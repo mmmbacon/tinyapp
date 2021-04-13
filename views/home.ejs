@@ -2,24 +2,42 @@
 <html lang="en">
  
   <%- include('partials/_head.ejs') %>
-  <%- include('./partials/_socialMedia.ejs') %>
+  <%- include('./partials/_socialMedia.ejs') %> 
+
+  <style>
+    h1 { 
+
+      animation-timing-function: ease-in;
+      animation: textZoom 1s infinite;
+    
+    }
+
+    @keyframes textZoom {
+      0% { transform: rotate(-1deg); }
+      50% { transform: rotate(1deg);}
+      100% { transform: rotate(-1deg);}
+    }
+
+  </style>
 
 <body>
-  <main style="margin: 1em;">
+  <main>
 
     <div class="container d-flex justify-content-center align-items-center" style="height: 100vh">
       <div class="row">
         <div class="col d-flex flex-column align-items-center">
           
-          <div class="col d-flex flex-column align-items-center bg-primary text-light py-3" style="width: 500px;">
-            <h1 class="text-center px-4" style="font-size: 3em; font-family: 'Fugaz One', cursive;">TinyApp</h1>
+          <div class="col d-flex flex-column align-items-center bg-primary text-light py-3" style="width: 500px; border-radius: 75px 75px 0px 0px; ">
+            <div style="height: 75px"></div>
+            <h1 id="title" class="position-absolute text-center px-4" style="top: 50px; line-height: 0px;font-size: 3em; font-family: 'Fugaz One', cursive; text-shadow: 3px 3px 5px rgba(0,0,0,0.2) ;">TinyApp</h1>
             <row>
               <form class="form-inline" action="/urls" method="POST">
-                <input class="form-control" type="text" name="longURL" placeholder="http://" value="http://">
+                <input class="form-control" type="text" name="longURL" placeholder="http://" value="http://" style="border: none; border-radius: 0px;">
                 <button class="btn btn-outline-primary text-light my-2" action="submit">GO</button>
               </form>
             </row>
           </div>
+          <div class="position-absolute text-right text-primary" style="bottom: -1.5em; right: 20px; font-size: 15px;"><i>a url minifier</i></div>
           
         </div>
         

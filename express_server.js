@@ -3,6 +3,8 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const favicon = require('serve-favicon');
+const path = require('path');
 
 const morgan = require('morgan');
 
@@ -17,10 +19,11 @@ const generateRandomString = function() {
 
   return result.join('');
 };
-
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(morgan('dev'));
+
 app.set("view engine", "ejs");
 
 const urlDatabase = {

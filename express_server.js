@@ -5,7 +5,15 @@ const bodyParser = require("body-parser");
 const morgan = require('morgan');
 
 const generateRandomString = function() {
-  return "a34hd9";
+  let result           = [];
+  let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let charactersLength = characters.length;
+  
+  for (let i = 0; i < 6; i++) {
+    result.push(characters.charAt(Math.floor(Math.random() * charactersLength)));
+  }
+
+  return result.join('');
 };
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -17,15 +25,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
+
+app.get('/', (req, res) => {
+  res.status(200);
+  res.render('home');
 });
 
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase
   };
-
   res.render('urls_index', templateVars);
 });
 
@@ -38,20 +50,20 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
 app.get("/u/:shortURL", (req, res) => {
   res.redirect(urlDatabase[req.params.shortURL]);
 });
 
+//Catchall
+app.get("*", (req, res) => {
+  res.redirect('/URLs');
+});
+
 app.post("/urls", (req, res) => {
   const random = generateRandomString();
+  console.log(req.body);
+  urlDatabase[random] = req.body.longURL;
+  console.log(urlDatabase);
   res.redirect(`/urls/${random}`);
 });
 
@@ -65,9 +77,6 @@ app.post("/urls/:id", (req, res) => {
   res.redirect(`/urls`);
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
 
 
 

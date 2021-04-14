@@ -38,8 +38,10 @@ app.listen(PORT, () => {
 });
 
 app.get('/', (req, res) => {
-  res.status(200);
-  res.render('home');
+  const templateVars = {
+    username: req.cookies['username']
+  };
+  res.render('home', templateVars);
 });
 
 app.get("/urls", (req, res) => {
@@ -67,6 +69,10 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(urlDatabase[req.params.shortURL]);
 });
 
+app.get("/login", (req, res) => {
+  res.render('login');
+});
+
 //Catchall
 app.get("*", (req, res) => {
   res.redirect('/URLs');
@@ -91,6 +97,7 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+  console.log(req.body);
   userName = req.body.username;
   res.cookie('username', userName);
   res.redirect('/urls');

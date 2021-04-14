@@ -19,11 +19,23 @@ describe('GET /URLs', () => {
 
 describe('GET /URLs/new', () => {
   it('Should return the URLs page', (done) => {
-    chai.request('http://localhost:8080')
+    chai.request('http://localhost:8080/')
       .get(`/URLs/new`)
       .end((err, res) => {
         res.should.have.status(200);
-        res.text.should.exist;
+        done();
+      });
+  });
+});
+
+describe('POST /login', () => {
+  it('Should return a cookie', (done) => {
+    chai.request('http://localhost:8080')
+      .get(`login`)
+      .send({ 'username': 'mmmbacon'})
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.should.have.cookie('username','mmmbacon');
         done();
       });
   });

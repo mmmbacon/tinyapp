@@ -14,9 +14,9 @@ const { nextTick } = require("process");
  * @returns {string} Serialized String
  */
 const serializer = function() {
-  let result           = [];
-  let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let charactersLength = characters.length;
+  let result             = [];
+  const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
   
   for (let i = 0; i < 6; i++) {
     result.push(characters.charAt(Math.floor(Math.random() * charactersLength)));
@@ -26,22 +26,22 @@ const serializer = function() {
 };
 
 /**
- * @description Checks if the user is logged in
+ * @description Middleware: Checks if the user is logged in
  * @param {string} cookieID The value from the 'id' cookie value
  * @returns {bool} True if the user is logged in
  */
-const checkUserLoggedIn = function(cookieID) {
+const checkUserLoggedIn = function(req, res, next) {
 
-  let result = false;
-
-  for (const userID of Object.keys(users)) {
-    console.log(userID);
-    if (userID === cookieID) {
-      result = true;
+  for (const id of Object.keys(users)) {
+    if (id === req.cookies.id) {
+      req.user = {
+        id: users[id].id,
+        username: users[id].username,
+        urls: users[id].urls
+      };
+      next();
     }
   }
-
-  return result;
 };
 
 /**
@@ -68,22 +68,20 @@ const logIn = function(username, password) {
 
 /**
  * @description Gets a scrubbed user object from the database
- * @param {string} username The users username
+ * @param {string} id The users username
  * @returns {object} User object without password
  */
-const getUser = function(username) {
+const getUser = function(id) {
   let result = {};
 
-  if (username) {
-    for (const user of Object.keys(users)) {
-      if (user.username === username) {
-        result = {
-          id : user.id,
-          username : user.username,
-          email : user.email,
-          urls : user.urls
-        };
-      }
+  for (const user of Object.keys(users)) {
+    if (user.id === id) {
+      result = {
+        id : user.id,
+        username : user.username,
+        email : user.email,
+        urls : user.urls
+      };
     }
   }
 
@@ -92,18 +90,28 @@ const getUser = function(username) {
 
 /**
  * @description Creates a new User in the database
- * @param {string} id The Generated User ID
+ * @param {string} userDatabase The database to create the user on
  * @param {string} username The user's submitted username
  * @param {string} email The user's submitted email
  * @param {string} password The user's submitted password
  */
-const createUser = function(userDatabase, id, username, email, password) {
+const createUser = function(userDatabase, username, email, password) {
+
+  const id = serializer();
   
   userDatabase[id] = {
     id: id,
     username: username,
     email: email,
-    password: password
+    password: password,
+    urls : []
+  };
+
+  return {
+    id: id,
+    username: username,
+    email: email,
+    urls: []
   };
 
 };
@@ -111,28 +119,11 @@ const createUser = function(userDatabase, id, username, email, password) {
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
-
-//Check to see if user is logged in and attach user data to request
-app.use((req, res, next) => {
-  if (checkUserLoggedIn(req.cookies.username)) {
-    req.user = getUser(req.cookies.userName);
-  }
-  console.log(req.user);
-  next();
-});
-
 app.use(morgan('dev'));
 
 app.set("view engine", "ejs");
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
-
 const users = {};
-
-let userName = "";
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
@@ -145,16 +136,16 @@ app.get('/', (req, res) => {
   res.render('home', templateVars);
 });
 
-app.get("/urls", (req, res) => {
+app.get("/urls", checkUserLoggedIn, (req, res) => {
 
-  //If the user is not on the request object(not logged in) return back to home
   if (!req.user) {
-    return res.status(500).redirect('/');
+    return res.status(401).redirect('/');
   }
-
+  
   const templateVars = {
-    urls: urlDatabase,
-    username: req.cookies['username']
+    id: req.user.id,
+    urls: req.user.urls,
+    username: req.user.username
   };
   
   res.render('urls_index', templateVars);
@@ -215,20 +206,21 @@ app.post("/urls/:id", (req, res) => {
 
 app.post("/login", (req, res) => {
 
-  //Logic for logging in
+  //Log user in and check for failure
   if (!logIn(req.body.username, req.body.password)) {
     return res.status(401).redirect('/');
   }
 
+  //Get user object from database
   const user = getUser(req.body.username);
-
   res.cookie('id', user.id);
   res.redirect('/urls');
+
 });
 
 app.post("/register", (req, res) => {
 
-  const id = serializer();
+  console.log(req.cookies);
 
   //Check to see if username or email already exist in database
   for (const user of Object.keys(users)) {
@@ -239,10 +231,9 @@ app.post("/register", (req, res) => {
     }
   }
 
-  //Create new user object
-  createUser(users, id, req.body.username, req.body.email, req.body.password);
-
-  res.cookie('id', id);
+  //Create new user object in database
+  const newUser = createUser(users, req.body.username, req.body.email, req.body.password);
+  res.cookie('id', newUser.id);
   res.redirect('/urls');
 });
 

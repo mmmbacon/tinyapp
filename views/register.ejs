@@ -12,6 +12,12 @@
 
       }
 
+      .contextCard{
+        width: 500px; 
+        border-radius: 75px 75px 0px 0px; 
+        box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+      }
+
       @keyframes textZoom {
         0% {
           transform: rotate(-1deg);
@@ -54,8 +60,7 @@
           <div class="row">
             <div class="col d-flex flex-column align-items-center">
 
-              <div class="col d-flex flex-column align-items-center bg-primary text-light py-3"
-                style="width: 500px; border-radius: 75px 75px 0px 0px; ">
+              <div class="col d-flex flex-column align-items-center bg-primary text-light py-3 contextCard">
                 <div style="height: 75px"></div>
                 <h1 id="title" class="position-absolute text-center px-4"
                   style="top: 50px; line-height: 0px;font-size: 3em; font-family: 'Fugaz One', cursive; text-shadow: 3px 3px 5px rgba(0,0,0,0.2) ;">
@@ -63,16 +68,20 @@
                 <row>
                   <form class="form" action="/register" method="POST">
                     <div class="input-group mb-2">
-                      <input class="form-control" type="username" name="username" placeholder="email"
+                      <input class="form-control" type="email" name="email" placeholder="email"
+                        style="border: none; border-radius: 0px;">
+                    </div>
+                    <div class="input-group mb-2">
+                      <input class="form-control" type="username" name="username" placeholder="username"
                         style="border: none; border-radius: 0px;">
                     </div>
                     <div class="input-group">
                       <input class="form-control" type="password" name="password" placeholder="password"
                         style="border: none; border-radius: 0px;">
                     </div>
-                    <button class="btn btn-warning text-primary my-2" style="border-radius: 0px;"
-                      action="submit">Register</button>
-                    <p><small><a href="/privacy" class="text-light">-> Read the privacy policy</a></small></p>
+                    <p class="my-0"><small>By registering, you automatically agree to the privacy policy</small></p>
+                    <p class="mb-2"><small><a href="/privacy" class="text-light">-> Read the privacy policy</a></small></p>
+                    <button class="btn btn-warning text-primary" action="submit">Register</button>
                   </form>
                 </row>
               </div>

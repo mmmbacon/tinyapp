@@ -1,9 +1,3 @@
-h1 {
-  animation: textZoom 2s infinite;
-}
-
-@keyframes textZoom {
-  0% { color: red; }
-  50% { color: blue; }
-  100% { color: red; }
+.btn {
+  border-radius: 0px;
 }

@@ -1,0 +1,12 @@
+<div class="container-fluid">
+  <div class="col">
+    <div class="row">
+      <div id="<%= success ? '' : 'fadeAlert' %>" class="alert alert-danger position-absolute w-100" style="opacity: 0" role="alert">
+        Username not available.
+      </div>
+      <div id="<%= success ? 'fadeAlert' : '' %>" class="alert alert-success position-absolute w-100 <%= message ? '' : 'd-none'%>" style="opacity: 0" role="alert">
+        Successfully registered user
+      </div>
+    </div>
+  </div>
+</div>

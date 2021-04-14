@@ -39,9 +39,10 @@ const checkUserLoggedIn = function(req, res, next) {
         username: users[id].username,
         urls: users[id].urls
       };
-      next();
     }
   }
+
+  next();
 };
 
 /**
@@ -52,13 +53,13 @@ const checkUserLoggedIn = function(req, res, next) {
  */
 const logIn = function(username, password) {
 
-  let result = false;
+  let result = null;
 
-  for (const user of Object.keys(users)) {
-    if (user.username === username || user.email === username) {
+  for (const id of Object.keys(users)) {
+    if (users[id].username === username || users[id].email === username) {
       //Ok found user - Now check password
-      if (user.password === password) {
-        result = true;
+      if (users[id].password === password) {
+        result = users[id].id;
       }
     }
   }
@@ -141,7 +142,7 @@ app.get("/urls", checkUserLoggedIn, (req, res) => {
   if (!req.user) {
     return res.status(401).redirect('/');
   }
-  
+
   const templateVars = {
     id: req.user.id,
     urls: req.user.urls,
@@ -206,14 +207,14 @@ app.post("/urls/:id", (req, res) => {
 
 app.post("/login", (req, res) => {
 
+  const userID = logIn(req.body.username, req.body.password);
+
   //Log user in and check for failure
-  if (!logIn(req.body.username, req.body.password)) {
+  if (!userID) {
     return res.status(401).redirect('/');
   }
 
-  //Get user object from database
-  const user = getUser(req.body.username);
-  res.cookie('id', user.id);
+  res.cookie('id', userID);
   res.redirect('/urls');
 
 });

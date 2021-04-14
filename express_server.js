@@ -221,11 +221,9 @@ app.post("/login", (req, res) => {
 
 app.post("/register", (req, res) => {
 
-  console.log(req.cookies);
-
   //Check to see if username or email already exist in database
   for (const user of Object.keys(users)) {
-    if (user.email === req.body.email || user.username === req.body.username) {
+    if (users[user].email === req.body.email || users[user].username === req.body.username) {
       //TODO: Change this to a proper redirect or alert
       // Redirect if so
       return res.redirect('/register');
@@ -237,7 +235,3 @@ app.post("/register", (req, res) => {
   res.cookie('id', newUser.id);
   res.redirect('/urls');
 });
-
-
-
-

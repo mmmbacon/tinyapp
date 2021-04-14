@@ -76,14 +76,31 @@ const logIn = function(username, password) {
 const getUser = function(id) {
   let result = {};
 
-  for (const user of Object.keys(users)) {
-    if (user.id === id) {
+  for (const id of Object.keys(users)) {
+    if (users[id].id === id) {
       result = {
-        id : user.id,
-        username : user.username,
-        email : user.email,
-        urls : user.urls
+        id : users[id].id,
+        username : users[id].username,
+        email : users[id].email,
+        urls : users[id].urls
       };
+    }
+  }
+
+  return result;
+};
+
+/**
+ * @description Checks to see if the user exists in database
+ * @param {string} username Username or email of the User
+ * @returns True if user exists in database
+ */
+const userDoesExist = function(username) {
+  let result = false;
+
+  for (const id of Object.keys(users)) {
+    if (users[id].username === username || users[id].email === username) {
+      result = true;
     }
   }
 
@@ -148,7 +165,9 @@ app.get("/urls", checkUserLoggedIn, (req, res) => {
     id: req.user.id,
     urls: req.user.urls,
     username: req.user.username,
-    email: req.user.email
+    email: req.user.email,
+    success: true,
+    message: req.query.loggedIn === 'true' ? 'Succesfully Logged in' : '',
   };
   
   res.render('urls_index', templateVars);
@@ -173,7 +192,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.render('login');
+  res.render('login', { success: true, message: ""});
 });
 
 app.get("/register", (req, res) => {
@@ -209,22 +228,27 @@ app.post("/urls/:id", (req, res) => {
 
 app.post("/login", (req, res) => {
 
+  if (!userDoesExist(req.body.username)) {
+    return res.status(403).render('login', { success: false, message: 'Please provide a valid username or password'});
+  }
+
   const userID = logIn(req.body.username, req.body.password);
 
   //Log user in and check for failure
   if (!userID) {
-    return res.status(401).redirect('/');
+    return res.status(403).redirect('/');
   }
 
   res.cookie('id', userID);
-  res.redirect('/urls');
+  let param = encodeURIComponent('true');
+  res.redirect('/urls?loggedIn=' + param);
 
 });
 
 app.post("/register", (req, res) => {
 
-  if (!req.body.username || req.body.username || req.body.password) {
-    return res.status(400).redirect('/register');
+  if (!req.body.username || !req.body.username || !req.body.password) {
+    return res.status(400).render('login', { success: false, message: 'Please ensure all fields are filled before submitting registration'});
   }
 
   //Check to see if username or email already exist in database
@@ -232,12 +256,13 @@ app.post("/register", (req, res) => {
     if (users[user].email === req.body.email || users[user].username === req.body.username) {
       //TODO: Change this to a proper redirect or alert
       // Redirect if so
-      return res.status(400).redirect('/register');
+      return res.status(400).render('login', { success: false, message: 'Username or Email already registered'});
     }
   }
 
   //Create new user object in database
   const newUser = createUser(users, req.body.username, req.body.email, req.body.password);
   res.cookie('id', newUser.id);
-  res.redirect('/urls');
+  let param = encodeURIComponent('true');
+  res.redirect('/urls?loggedIn=' + param);
 });

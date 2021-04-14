@@ -1,12 +1,41 @@
+<style>
+  #fadeAlert {
+
+    animation-timing-function: ease-in;
+    animation: fadeAlert 5s;
+
+  }
+
+  @keyframes fadeAlert {
+    0% {
+      opacity: 1.0;
+    }
+
+    50% {
+      opacity: 1.0;
+    }
+
+    100% {
+      opacity: 0;
+    }
+  }
+</style>
+
 <div class="container-fluid">
   <div class="col">
     <div class="row">
-      <div id="<%= success ? '' : 'fadeAlert' %>" class="alert alert-danger position-absolute w-100" style="opacity: 0" role="alert">
-        Username not available.
-      </div>
-      <div id="<%= success ? 'fadeAlert' : '' %>" class="alert alert-success position-absolute w-100 <%= message ? '' : 'd-none'%>" style="opacity: 0" role="alert">
-        Successfully registered user
-      </div>
+        <div id="<%= success ? '' : 'fadeAlert' %>" 
+          class="alert alert-danger fixed-bottom w-100"
+          style="opacity: 0" 
+          role="alert">
+          <%= message %>
+        </div>
+        <div id="<%= success ? 'fadeAlert' : '' %>" 
+          class="alert alert-success fixed-bottom w-100 <%= message ? '' : 'd-none'%>" 
+          style="opacity: 0"
+          role="alert">
+          <%= message %>
+        </div>
     </div>
   </div>
 </div>

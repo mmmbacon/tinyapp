@@ -23,6 +23,8 @@
 <body>
   <main>
 
+    <%- include('partials/_alert', {success: success, message: message }) %>
+
     <div class="container d-flex justify-content-center align-items-center" style="height: 100vh">
       <div class="row">
         <div class="col d-flex flex-column align-items-center">
@@ -42,7 +44,7 @@
                 </div>
                 <button class="btn btn-warning text-primary my-2" action="submit">Login</button>
               </form>
-              <p class="mb-0"><small><a href="/privacy" class="text-light">Register</a></small></p>
+              <p class="mb-0"><small><a href="/register" class="text-light">Register</a></small></p>
               <p class="mb-0"><small><a href="/privacy" class="text-light">-> Read the privacy policy</a></small></p>
             </row>
           </div>

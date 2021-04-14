@@ -37,7 +37,8 @@ const checkUserLoggedIn = function(req, res, next) {
       req.user = {
         id: users[id].id,
         username: users[id].username,
-        urls: users[id].urls
+        urls: users[id].urls,
+        email: users[id].email
       };
     }
   }
@@ -146,7 +147,8 @@ app.get("/urls", checkUserLoggedIn, (req, res) => {
   const templateVars = {
     id: req.user.id,
     urls: req.user.urls,
-    username: req.user.username
+    username: req.user.username,
+    email: req.user.email
   };
   
   res.render('urls_index', templateVars);
@@ -221,12 +223,16 @@ app.post("/login", (req, res) => {
 
 app.post("/register", (req, res) => {
 
+  if (!req.body.username || req.body.username || req.body.password) {
+    return res.status(400).redirect('/register');
+  }
+
   //Check to see if username or email already exist in database
   for (const user of Object.keys(users)) {
     if (users[user].email === req.body.email || users[user].username === req.body.username) {
       //TODO: Change this to a proper redirect or alert
       // Redirect if so
-      return res.redirect('/register');
+      return res.status(400).redirect('/register');
     }
   }
 

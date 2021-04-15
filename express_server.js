@@ -153,6 +153,23 @@ const getUserURLS = function(urlDatabase, id) {
   return result;
 };
 
+/**
+ * @description Checks the database to see if the provided user owns the provided URL
+ * @param {object} urlDatabase
+ * @param {string} url
+ * @param {string} id
+ * @returns {boolean} User does own URL
+ */
+const userDoesOwnURL = function(urlDatabase, url, id) {
+  let result = false;
+
+  if (urlDatabase[url].userID === id) {
+    result = true;
+  }
+
+  return result;
+};
+
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -184,10 +201,6 @@ app.get("/urls", checkUserLoggedIn, (req, res) => {
   if (!req.user) {
     return res.status(401).redirect('/');
   }
-
-  console.log(urlDatabase);
-  console.log(req.user.id);
-  console.log(getUserURLS(urlDatabase, req.user.id));
 
   const templateVars = {
     id: req.user.id,
@@ -270,12 +283,31 @@ app.post("/urls", checkUserLoggedIn, (req, res) => {
   res.redirect(`/urls/${random}`);
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.post("/urls/:shortURL/delete", checkUserLoggedIn, (req, res) => {
+
+
+  if (!req.user) {
+    return res.status(401).render('error', { title: 'Oh no you didn\'t!', message: 'Please Login first' });
+  }
+
+  if (!userDoesOwnURL(urlDatabase, req.params.shortURL, req.user.id)) {
+    return res.status(401).render('error', { title: 'Oh no you didn\'t!', message: 'You don\'t own that URL!' });
+  }
+
   delete urlDatabase[req.params.shortURL];
   res.redirect(`/urls`);
 });
 
-app.post("/urls/:id", (req, res) => {
+app.post("/urls/:id", checkUserLoggedIn, (req, res) => {
+
+  if (!req.user) {
+    return res.status(401).render('error', { title: 'Oh no you didn\'t!', message: 'Please login first.' });
+  }
+
+  if (!userDoesOwnURL(urlDatabase, req.params.id, req.user.id)) {
+    return res.status(401).render('error', { title: 'Oh no you didn\'t!', message: 'You don\'t own that URL!' });
+  }
+
   urlDatabase[req.params.id].longURL = req.body.url;
   res.redirect(`/urls`);
 });

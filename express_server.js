@@ -180,16 +180,33 @@ app.get("/urls", checkUserLoggedIn, (req, res) => {
 
 });
 
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+app.get("/urls/new", checkUserLoggedIn, (req, res) => {
+
+  if (!req.user) {
+    return res.status(401).redirect('/');
+  }
+
+  const templateVars = {
+    username: req.user.username,
+    email: req.user.email,
+  };
+
+  res.render("urls_new", templateVars);
 });
 
-app.get("/urls/:shortURL", (req, res) => {
+app.get("/urls/:shortURL", checkUserLoggedIn, (req, res) => {
+  
+  if (!req.user) {
+    return res.status(401).redirect('/');
+  }
+
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies['username']
+    longURL: urlDatabase[req.params.shortURL].longURL,
+    username: req.user.username,
+    email: req.user.email,
   };
+
   res.render("urls_show", templateVars);
 });
 
@@ -215,9 +232,17 @@ app.get("*", (req, res) => {
   res.redirect('/urls');
 });
 
-app.post("/urls", (req, res) => {
+app.post("/urls", checkUserLoggedIn, (req, res) => {
+
+  if (!req.user) {
+    return res.status(401).render('home', { success: false, message: 'Nuh uh uh. You didn\'t say the magic word.' });
+  }
+
   const random = serializer();
-  urlDatabase[random] = req.body.longURL;
+  urlDatabase[random] = {
+    longURL: req.body.longURL,
+    userID: req.user.id
+  };
   console.log(urlDatabase);
   res.redirect(`/urls/${random}`);
 });
@@ -228,7 +253,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.url;
+  urlDatabase[req.params.id].longURL = req.body.url;
   res.redirect(`/urls`);
 });
 

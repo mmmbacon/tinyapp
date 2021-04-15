@@ -5,8 +5,7 @@
 
 <body>
 
-  <%- include('partials/_header.ejs') %>
-  <%- include('partials/_alert', {success: success, message: message }) %>
+  <%- include('partials/_header.ejs', { username : username, email : email }) %>
 
   <div class="card text-center">
       <div class="card-header"></div>

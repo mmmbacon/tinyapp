@@ -28,16 +28,3 @@ describe('GET /URLs/new', () => {
   });
 });
 
-describe('POST /login', () => {
-  it('Should return a cookie', (done) => {
-    chai.request('http://localhost:8080')
-      .get(`login`)
-      .send({ 'username': 'mmmbacon'})
-      .end((err, res) => {
-        res.should.have.status(200);
-        res.should.have.cookie('username','mmmbacon');
-        done();
-      });
-  });
-});
-

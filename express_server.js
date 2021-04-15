@@ -10,29 +10,14 @@ const morgan = require('morgan');
 const { nextTick } = require("process");
 const bcrypt = require('bcrypt');
 const {
-  comparePassword,
+  serializer,
+  logIn,
   getUserByID,
   userDoesExist,
   createUser,
   getUserURLS,
   userDoesOwnURL
 } = require('./helpers');
-
-/**
- * @description Creates a 6 character randomized string of lower, and upper case characters and numbers
- * @returns {string} Serialized String
- */
-const serializer = function() {
-  let result             = [];
-  const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  
-  for (let i = 0; i < 6; i++) {
-    result.push(characters.charAt(Math.floor(Math.random() * charactersLength)));
-  }
-
-  return result.join('');
-};
 
 /**
  * @description Middleware: Checks if the user is logged in
@@ -207,7 +192,7 @@ app.post("/login", (req, res) => {
     return res.status(403).render('login', { success: false, message: 'Please provide a valid username or password'});
   }
 
-  const userID = comparePassword(req.body.username, req.body.password);
+  const userID = logIn(req.body.username, req.body.password);
 
   //Log user in and check for failure
   if (!userID) {

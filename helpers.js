@@ -1,13 +1,29 @@
 const bcrypt = require('bcrypt');
 
 /**
- * @description Logs the user in
+ * @description Creates a 6 character randomized string of lower, and upper case characters and numbers
+ * @returns {string} Serialized String
+ */
+const serializer = function() {
+  let result             = [];
+  const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  
+  for (let i = 0; i < 6; i++) {
+    result.push(characters.charAt(Math.floor(Math.random() * charactersLength)));
+  }
+
+  return result.join('');
+};
+
+/**
+ * @description Checks to see if the user password matches what is in the database
  * @param {object} userDatabase The user database to query
  * @param {string} username User's username
  * @param {string} password User's password
  * @returns {boolean} Password match state
  */
-const comparePassword = function(userDatabase, username, password) {
+const logIn = function(userDatabase, username, password) {
 
   let result = null;
 
@@ -15,7 +31,7 @@ const comparePassword = function(userDatabase, username, password) {
     if (userDatabase[id].username === username || userDatabase[id].email === username) {
       //Ok found user - Now check password
       if (bcrypt.compareSync(password, userDatabase[id].password)) {
-        result = users[id].id;
+        result = userDatabase[id].id;
       }
     }
   }
@@ -90,26 +106,34 @@ const userDoesExist = function(userDatabase, username) {
  * @param {string} username The user's submitted username
  * @param {string} email The user's submitted email
  * @param {string} password The user's submitted password
+ * @returns {object} Returns the created user object without password field
  */
 const createUser = function(userDatabase, username, email, password) {
 
-  const id = serializer();
-  const hashedPassword =  bcrypt.hashSync(password, 10);
-  
-  userDatabase[id] = {
-    id: id,
-    username: username,
-    email: email,
-    password: hashedPassword,
-    urls : []
-  };
+  let result = {};
 
-  return {
-    id: id,
-    username: username,
-    email: email,
-    urls: []
-  };
+  if (userDatabase && username && email && password) {
+    const id = serializer();
+    const hashedPassword =  bcrypt.hashSync(password, 10);
+  
+    userDatabase[id] = {
+      id: id,
+      username: username,
+      email: email,
+      password: hashedPassword,
+      urls : []
+    };
+
+    result = {
+      id: id,
+      username: username,
+      email: email,
+      urls: []
+    };
+
+  }
+
+  return result;
 
 };
 
@@ -134,10 +158,10 @@ const getUserURLS = function(urlDatabase, id) {
 
 /**
  * @description Checks the database to see if the provided user owns the provided URL
- * @param {object} urlDatabase
- * @param {string} url
- * @param {string} id
- * @returns {boolean} User does own URL
+ * @param {object} urlDatabase The URL database to query
+ * @param {string} url URL to query
+ * @param {string} id User ID
+ * @returns {boolean} User owns url?
  */
 const userDoesOwnURL = function(urlDatabase, url, id) {
   let result = false;
@@ -150,7 +174,8 @@ const userDoesOwnURL = function(urlDatabase, url, id) {
 };
 
 module.exports = {
-  comparePassword,
+  serializer,
+  logIn,
   getUserByID,
   getUserByEmail,
   userDoesExist,

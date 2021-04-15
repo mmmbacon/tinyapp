@@ -7,6 +7,7 @@ const favicon = require('serve-favicon');
 const path = require('path');
 const morgan = require('morgan');
 const { nextTick } = require("process");
+const bcrypt = require('bcrypt');
 
 /**
  * @description Creates a 6 character randomized string of lower, and upper case characters and numbers
@@ -58,7 +59,7 @@ const logIn = function(username, password) {
   for (const id of Object.keys(users)) {
     if (users[id].username === username || users[id].email === username) {
       //Ok found user - Now check password
-      if (users[id].password === password) {
+      if (bcrypt.compareSync(password, users[id].password)) {
         result = users[id].id;
       }
     }
@@ -116,12 +117,13 @@ const userDoesExist = function(username) {
 const createUser = function(userDatabase, username, email, password) {
 
   const id = serializer();
+  const hashedPassword =  bcrypt.hashSync(password, 10);
   
   userDatabase[id] = {
     id: id,
     username: username,
     email: email,
-    password: password,
+    password: hashedPassword,
     urls : []
   };
 

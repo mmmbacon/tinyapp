@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const favicon = require('serve-favicon');
 const path = require('path');
 const morgan = require('morgan');
@@ -33,7 +34,7 @@ const serializer = function() {
 const checkUserLoggedIn = function(req, res, next) {
 
   for (const id of Object.keys(users)) {
-    if (id === req.cookies.id) {
+    if (id === req.session.id) {
       req.user = {
         id: users[id].id,
         username: users[id].username,
@@ -174,7 +175,11 @@ const userDoesOwnURL = function(urlDatabase, url, id) {
 
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'tinyapp-session',
+  keys: ['mongoose', 'trouble', 'red', 'peppers', 'photograph', 'genuine'],
+  maxAge: 1 * 24 * 60 * 60 * 1000 //24 hours
+}));
 app.use(morgan('dev'));
 
 app.set("view engine", "ejs");
@@ -327,7 +332,7 @@ app.post("/login", (req, res) => {
     return res.status(403).redirect('/');
   }
 
-  res.cookie('id', userID);
+  req.session.id = userID;
   let param = encodeURIComponent('true');
   res.redirect('/urls?loggedIn=' + param);
 
@@ -350,7 +355,7 @@ app.post("/register", (req, res) => {
 
   //Create new user object in database
   const newUser = createUser(users, req.body.username, req.body.email, req.body.password);
-  res.cookie('id', newUser.id);
+  req.session.id = newUser.id;
   let param = encodeURIComponent('true');
   res.redirect('/urls?loggedIn=' + param);
 });

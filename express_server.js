@@ -2,12 +2,10 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const favicon = require('serve-favicon');
 const path = require('path');
 const morgan = require('morgan');
-const { nextTick } = require("process");
 const bcrypt = require('bcrypt');
 const {
   serializer,

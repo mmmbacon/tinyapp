@@ -2,7 +2,7 @@
 <html lang="en">
  
   <%- include('./partials/_head.ejs') %>
-  <%- include('./partials/_login.ejs') %>
+  <%- include('./partials/_login.ejs', { username : username, email : email }) %>
 
   <style>
     #title { 
@@ -29,15 +29,21 @@
           <div class="col d-flex flex-column align-items-center bg-primary text-light py-3" style="width: 500px; border-radius: 75px 75px 0px 0px; ">
             <div style="height: 75px"></div>
             <h1 id="title" class="position-absolute text-center px-4" style="top: 50px; line-height: 0px;font-size: 3em; font-family: 'Fugaz One', cursive; text-shadow: 3px 3px 5px rgba(0,0,0,0.2) ;">TinyApp</h1>
+            <h4 class="mb-3" style="font-family: 'Fugaz One', cursive; text-shadow: 3px 3px 5px rgba(0,0,0,0.2) ;">The Tiny URL Shortener</h4>
             <row>
+              <% if(loggedIn) { %> 
               <form class="form-inline" action="/urls" method="POST">
                 <input class="form-control" type="text" name="longURL" placeholder="http://" value="http://" style="border: none; border-radius: 0px;">
                 <button class="btn btn-outline-primary text-light my-2" action="submit">GO</button>
               </form>
-              <p class="mb-0"><small><a href="/privacy" class="text-light">-> Read the privacy policy</a></small></p>
+              <% }else{ %>
+                <a class="btn btn-warning text-primary mb-2" href="/login" role="button">Login</a>
+                <a class="btn btn-warning text-primary mb-2" href="/register" role="button">Register</a>
+                <p class="mb-0"><small><a href="/privacy" class="text-light">-> Read the privacy policy</a></small></p>
+              <%  } %>
             </row>
           </div>
-          <div class="position-absolute text-right text-primary" style="bottom: -1.5em; right: 20px; font-size: 15px;"><i>a fantastic url minifier</i></div>
+          <div class="position-absolute text-right text-primary" style="bottom: -1.5em; right: 20px; font-size: 15px;"><i>it's so tiny!</i></div>
         </div>
       </div>
     </div>

@@ -144,14 +144,20 @@ app.set("view engine", "ejs");
 
 const users = {};
 
+const urlDatabase = {};
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-app.get('/', (req, res) => {
+app.get('/', checkUserLoggedIn, (req, res) => {
+
   const templateVars = {
-    username: req.cookies['username']
+    email: req.user ? req.user.email : null,
+    username: req.user ? req.user.username : null,
+    loggedIn: req.user ? true : false
   };
+
   res.render('home', templateVars);
 });
 

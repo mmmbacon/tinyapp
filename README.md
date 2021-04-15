@@ -18,6 +18,16 @@ Libraries used:
 
 ```bcrypt```
 
+Testing:
+
+```mocha```
+```chai```
+```chai-http```
+
+Utilities:
+
+ ```nodemon```
+
 ## Page Examples
 
 ### Home Page

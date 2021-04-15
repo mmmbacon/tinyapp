@@ -5,7 +5,6 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const favicon = require('serve-favicon');
 const path = require('path');
-
 const morgan = require('morgan');
 const { nextTick } = require("process");
 
@@ -135,6 +134,25 @@ const createUser = function(userDatabase, username, email, password) {
 
 };
 
+/**
+ * @description Returns composed objects of all urls stored for the user
+ * @param {object} urlDatabase
+ * @param {string} id
+ * @returns {object} All User URLS
+ */
+const getUserURLS = function(urlDatabase, id) {
+  const result = {};
+
+  for (const url of Object.keys(urlDatabase)) {
+    if (urlDatabase[url].userID === id) {
+      result[url] = {
+        longURL : urlDatabase[url].longURL
+      };
+    }
+  }
+  return result;
+};
+
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -167,9 +185,13 @@ app.get("/urls", checkUserLoggedIn, (req, res) => {
     return res.status(401).redirect('/');
   }
 
+  console.log(urlDatabase);
+  console.log(req.user.id);
+  console.log(getUserURLS(urlDatabase, req.user.id));
+
   const templateVars = {
     id: req.user.id,
-    urls: req.user.urls,
+    urls: getUserURLS(urlDatabase, req.user.id),
     username: req.user.username,
     email: req.user.email,
     success: true,
@@ -211,7 +233,7 @@ app.get("/urls/:shortURL", checkUserLoggedIn, (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  res.redirect(urlDatabase[req.params.shortURL]);
+  res.redirect(urlDatabase[req.params.shortURL].longURL);
 });
 
 app.get("/login", (req, res) => {
@@ -239,11 +261,12 @@ app.post("/urls", checkUserLoggedIn, (req, res) => {
   }
 
   const random = serializer();
+
   urlDatabase[random] = {
     longURL: req.body.longURL,
     userID: req.user.id
   };
-  console.log(urlDatabase);
+
   res.redirect(`/urls/${random}`);
 });
 

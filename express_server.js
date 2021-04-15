@@ -9,6 +9,14 @@ const path = require('path');
 const morgan = require('morgan');
 const { nextTick } = require("process");
 const bcrypt = require('bcrypt');
+const {
+  comparePassword,
+  getUserByID,
+  userDoesExist,
+  createUser,
+  getUserURLS,
+  userDoesOwnURL
+} = require('./helpers');
 
 /**
  * @description Creates a 6 character randomized string of lower, and upper case characters and numbers
@@ -45,132 +53,6 @@ const checkUserLoggedIn = function(req, res, next) {
   }
 
   next();
-};
-
-/**
- * @description Logs the user in
- * @param {string} username User's username
- * @param {string} password User's password
- * @returns {boolean} Password match state
- */
-const logIn = function(username, password) {
-
-  let result = null;
-
-  for (const id of Object.keys(users)) {
-    if (users[id].username === username || users[id].email === username) {
-      //Ok found user - Now check password
-      if (bcrypt.compareSync(password, users[id].password)) {
-        result = users[id].id;
-      }
-    }
-  }
-
-  return result;
-};
-
-/**
- * @description Gets a scrubbed user object from the database
- * @param {string} id The users username
- * @returns {object} User object without password
- */
-const getUser = function(id) {
-  let result = {};
-
-  for (const id of Object.keys(users)) {
-    if (users[id].id === id) {
-      result = {
-        id : users[id].id,
-        username : users[id].username,
-        email : users[id].email,
-        urls : users[id].urls
-      };
-    }
-  }
-
-  return result;
-};
-
-/**
- * @description Checks to see if the user exists in database
- * @param {string} username Username or email of the User
- * @returns True if user exists in database
- */
-const userDoesExist = function(username) {
-  let result = false;
-
-  for (const id of Object.keys(users)) {
-    if (users[id].username === username || users[id].email === username) {
-      result = true;
-    }
-  }
-
-  return result;
-};
-
-/**
- * @description Creates a new User in the database
- * @param {string} userDatabase The database to create the user on
- * @param {string} username The user's submitted username
- * @param {string} email The user's submitted email
- * @param {string} password The user's submitted password
- */
-const createUser = function(userDatabase, username, email, password) {
-
-  const id = serializer();
-  const hashedPassword =  bcrypt.hashSync(password, 10);
-  
-  userDatabase[id] = {
-    id: id,
-    username: username,
-    email: email,
-    password: hashedPassword,
-    urls : []
-  };
-
-  return {
-    id: id,
-    username: username,
-    email: email,
-    urls: []
-  };
-
-};
-
-/**
- * @description Returns composed objects of all urls stored for the user
- * @param {object} urlDatabase
- * @param {string} id
- * @returns {object} All User URLS
- */
-const getUserURLS = function(urlDatabase, id) {
-  const result = {};
-
-  for (const url of Object.keys(urlDatabase)) {
-    if (urlDatabase[url].userID === id) {
-      result[url] = {
-        longURL : urlDatabase[url].longURL
-      };
-    }
-  }
-  return result;
-};
-
-/**
- * @description Checks the database to see if the provided user owns the provided URL
- * @param {object} urlDatabase
- * @param {string} url
- * @param {string} id
- * @returns {boolean} User does own URL
- */
-const userDoesOwnURL = function(urlDatabase, url, id) {
-  let result = false;
-
-  if (urlDatabase[url].userID === id) {
-    result = true;
-  }
-
-  return result;
 };
 
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -325,7 +207,7 @@ app.post("/login", (req, res) => {
     return res.status(403).render('login', { success: false, message: 'Please provide a valid username or password'});
   }
 
-  const userID = logIn(req.body.username, req.body.password);
+  const userID = comparePassword(req.body.username, req.body.password);
 
   //Log user in and check for failure
   if (!userID) {
@@ -335,6 +217,14 @@ app.post("/login", (req, res) => {
   req.session.id = userID;
   let param = encodeURIComponent('true');
   res.redirect('/urls?loggedIn=' + param);
+
+});
+
+app.post("/logout", (req, res) => {
+
+  console.log('logging out');
+  req.session = null;
+  res.redirect('/');
 
 });
 

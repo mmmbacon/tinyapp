@@ -1,7 +1,7 @@
 <script>
 
   const logout = function(){
-    document.cookie = "id=; SameSite=Secure; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookies = "tinyapp-session=; SameSite=None; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=localhost; path=/;";
     window.location.reload();
   }
 
@@ -20,8 +20,10 @@
       </div>
     </div>
     <div>
+
+      <form id="logout" class="form-inline" action="/logout" method="POST"></form>
       
-      <form class="form-inline" action="/login" method="POST">
+      <form id="login" class="form-inline" action="/login" method="POST">
         <!-- Login Icon-->
         <label class="form-label text-light mr-2">
           <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
@@ -32,10 +34,10 @@
         </label>
         
         <% if(username) { %>
-          <button class="btn btn-warning text-primary ml-2" type="button" onclick="logout()">Logout</button>
+          <button class="btn btn-warning text-primary ml-2" type="submit" form="logout">Logout</button>
         <% }else{ %> 
           <input class="form-control" type="text" name="username" placeholder="Username">
-          <button class="btn btn-warning text-primary ml-2" type="submit">Login</button>
+          <button class="btn btn-warning text-primary ml-2" type="submit" form="login">Login</button>
         <% } %>
          
       </form>

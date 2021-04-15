@@ -26,13 +26,13 @@ const {
  */
 const checkUserLoggedIn = function(req, res, next) {
 
-  for (const id of Object.keys(users)) {
+  for (const id of Object.keys(userDatabase)) {
     if (id === req.session.id) {
       req.user = {
-        id: users[id].id,
-        username: users[id].username,
-        urls: users[id].urls,
-        email: users[id].email
+        id: userDatabase[id].id,
+        username: userDatabase[id].username,
+        urls: userDatabase[id].urls,
+        email: userDatabase[id].email
       };
     }
   }
@@ -51,7 +51,7 @@ app.use(morgan('dev'));
 
 app.set("view engine", "ejs");
 
-const users = {};
+const userDatabase = {};
 
 const urlDatabase = {};
 
@@ -192,11 +192,13 @@ app.post("/login", (req, res) => {
     return res.status(403).render('login', { success: false, message: 'Please provide a valid username or password'});
   }
 
-  const userID = logIn(req.body.username, req.body.password);
+  const userID = logIn(userDatabase, req.body.username, req.body.password);
+
+  console.log(userID);
 
   //Log user in and check for failure
   if (!userID) {
-    return res.status(403).redirect('/');
+    return res.status(403).render('login', { success: false, message: 'Could not log user in'});
   }
 
   req.session.id = userID;
@@ -220,8 +222,8 @@ app.post("/register", (req, res) => {
   }
 
   //Check to see if username or email already exist in database
-  for (const user of Object.keys(users)) {
-    if (users[user].email === req.body.email || users[user].username === req.body.username) {
+  for (const user of Object.keys(userDatabase)) {
+    if (userDatabase[user].email === req.body.email || userDatabase[user].username === req.body.username) {
       //TODO: Change this to a proper redirect or alert
       // Redirect if so
       return res.status(400).render('login', { success: false, message: 'Username or Email already registered'});
@@ -229,7 +231,7 @@ app.post("/register", (req, res) => {
   }
 
   //Create new user object in database
-  const newUser = createUser(users, req.body.username, req.body.email, req.body.password);
+  const newUser = createUser(userDatabase, req.body.username, req.body.email, req.body.password);
   req.session.id = newUser.id;
   let param = encodeURIComponent('true');
   res.redirect('/urls?loggedIn=' + param);

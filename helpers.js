@@ -28,7 +28,9 @@ const logIn = function(userDatabase, username, password) {
   let result = null;
 
   for (const id of Object.keys(userDatabase)) {
+    console.log('checking user', userDatabase[id]);
     if (userDatabase[id].username === username || userDatabase[id].email === username) {
+      console.log('found user');
       //Ok found user - Now check password
       if (bcrypt.compareSync(password, userDatabase[id].password)) {
         result = userDatabase[id].id;

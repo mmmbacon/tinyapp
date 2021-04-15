@@ -6,7 +6,6 @@ const cookieSession = require('cookie-session');
 const favicon = require('serve-favicon');
 const path = require('path');
 const morgan = require('morgan');
-const bcrypt = require('bcrypt');
 const {
   serializer,
   logIn,

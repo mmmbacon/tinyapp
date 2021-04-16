@@ -60,7 +60,7 @@
 !["User URLs"](https://user-images.githubusercontent.com/8649801/114969882-8616dd00-9e36-11eb-83c3-7400ac63a318.png)
 
 ### User URLs Page (Populated URL Table)
-!["User URLs Page with Populated URL Table"](https://user-images.githubusercontent.com/8649801/114945086-f5c0a400-9e05-11eb-9026-da6e771cab2d.png)
+!["Populated URL Table"](https://user-images.githubusercontent.com/8649801/114970312-6df38d80-9e37-11eb-9310-90579456e482.png)
 
 ### Bad Login
 !["Bad Login Page"](https://user-images.githubusercontent.com/8649801/114969929-9d55ca80-9e36-11eb-9c87-10c37a5a46da.png)

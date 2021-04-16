@@ -15,6 +15,7 @@ const {
   getUserURLS,
   userDoesOwnURL
 } = require('./helpers');
+const { url } = require("inspector");
 
 /**
  * @description Middleware: Checks if the user is logged in
@@ -70,7 +71,7 @@ app.get('/', checkUserLoggedIn, (req, res) => {
 app.get("/urls", checkUserLoggedIn, (req, res) => {
 
   if (!req.user) {
-    return res.status(401).redirect('/');
+    return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
   const templateVars = {
@@ -103,7 +104,7 @@ app.get("/urls/new", checkUserLoggedIn, (req, res) => {
 app.get("/urls/:shortURL", checkUserLoggedIn, (req, res) => {
   
   if (!req.user) {
-    return res.status(401).redirect('/');
+    return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
   const templateVars = {
@@ -117,6 +118,11 @@ app.get("/urls/:shortURL", checkUserLoggedIn, (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
+
+  if (!urlDatabase[req.params.shortURL]) {
+    return res.status(401).render('error', { title: 'Error 404', message: 'URL Not Found.'});
+  }
+
   res.redirect(urlDatabase[req.params.shortURL].longURL);
 });
 
@@ -124,9 +130,13 @@ app.get("/login", (req, res) => {
   res.render('login', { success: true, message: ""});
 });
 
-app.get("/register", (req, res) => {
+app.get("/register", checkUserLoggedIn, (req, res) => {
 
-  res.render('register');
+  if (req.user) {
+    res.redirect('/urls');
+  }
+
+  res.render('register', { success: true, message: "" });
 });
 
 app.get("/privacy", (req, res) => {
@@ -141,7 +151,7 @@ app.get("*", (req, res) => {
 app.post("/urls", checkUserLoggedIn, (req, res) => {
 
   if (!req.user) {
-    return res.status(401).render('home', { success: false, message: 'Nuh uh uh. You didn\'t say the magic word.' });
+    return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
   const random = serializer();
@@ -158,11 +168,11 @@ app.post("/urls/:shortURL/delete", checkUserLoggedIn, (req, res) => {
 
 
   if (!req.user) {
-    return res.status(401).render('error', { title: 'Oh no you didn\'t!', message: 'Please Login first' });
+    return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
   if (!userDoesOwnURL(urlDatabase, req.params.shortURL, req.user.id)) {
-    return res.status(401).render('error', { title: 'Oh no you didn\'t!', message: 'You don\'t own that URL!' });
+    return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. You don\'t own that URL!'});
   }
 
   delete urlDatabase[req.params.shortURL];
@@ -172,7 +182,7 @@ app.post("/urls/:shortURL/delete", checkUserLoggedIn, (req, res) => {
 app.post("/urls/:id", checkUserLoggedIn, (req, res) => {
 
   if (!req.user) {
-    return res.status(401).render('error', { title: 'Oh no you didn\'t!', message: 'Please login first.' });
+    return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
   if (!userDoesOwnURL(urlDatabase, req.params.id, req.user.id)) {
@@ -191,8 +201,6 @@ app.post("/login", (req, res) => {
 
   const userID = logIn(userDatabase, req.body.username, req.body.password);
 
-  console.log(userID);
-
   //Log user in and check for failure
   if (!userID) {
     return res.status(403).render('login', { success: false, message: 'Could not log user in'});
@@ -206,7 +214,6 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
 
-  console.log('logging out');
   req.session = null;
   res.redirect('/');
 
@@ -215,7 +222,7 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
 
   if (!req.body.username || !req.body.username || !req.body.password) {
-    return res.status(400).render('login', { success: false, message: 'Please ensure all fields are filled before submitting registration'});
+    return res.status(400).render('register', { success: false, message: 'Please ensure all fields are filled before submitting registration'});
   }
 
   //Check to see if username or email already exist in database

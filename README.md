@@ -54,7 +54,7 @@
 !["Login Page"](https://user-images.githubusercontent.com/8649801/114969819-62539700-9e36-11eb-86dc-6f1fd5521955.png)
 
 ### Privacy Policy Page
-!["Privacy Policy Page"](https://user-images.githubusercontent.com/8649801/114969841-6ed7ef80-9e36-11eb-819e-56ef892f0cae.png)
+!["Privacy Policy Page"](https://user-images.githubusercontent.com/8649801/114970484-c4f96280-9e37-11eb-80fb-dadd3a231f78.png)
 
 ### User URLs Page (Successful Login)
 !["User URLs"](https://user-images.githubusercontent.com/8649801/114969882-8616dd00-9e36-11eb-83c3-7400ac63a318.png)

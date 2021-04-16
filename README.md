@@ -45,30 +45,35 @@
 ## Page Examples
 
 ### Home Page
-!["Home Page"](https://user-images.githubusercontent.com/8649801/114943261-f441ac80-9e02-11eb-81c0-12f3a5d7fb02.png)
+!["Home Page"](https://user-images.githubusercontent.com/8649801/114969728-3afcca00-9e36-11eb-876e-226f0cdeb4d5.png)
 
 ### Registration Page
-!["Registration Page"](https://user-images.githubusercontent.com/8649801/114943313-0885a980-9e03-11eb-9ca7-8c13f4999603.png)
+!["Registration Page"](https://user-images.githubusercontent.com/8649801/114969778-4fd95d80-9e36-11eb-95d6-482ee4e8fea2.png)
 
 ### Login Page
-!["Login Page"](https://user-images.githubusercontent.com/8649801/114943377-20f5c400-9e03-11eb-8ff4-32ff0d05a414.png)
+!["Login Page"](https://user-images.githubusercontent.com/8649801/114969819-62539700-9e36-11eb-86dc-6f1fd5521955.png)
 
 ### Privacy Policy Page
-!["Privacy Policy Page"](https://user-images.githubusercontent.com/8649801/114943409-2f43e000-9e03-11eb-83c5-a160f2bbb091.png)
+!["Privacy Policy Page"](https://user-images.githubusercontent.com/8649801/114969841-6ed7ef80-9e36-11eb-819e-56ef892f0cae.png)
 
 ### User URLs Page (Successful Login)
-!["User URLs Page"](https://user-images.githubusercontent.com/8649801/114944053-2c95ba80-9e04-11eb-9ed7-3beb0fac5224.png)
+!["User URLs"](https://user-images.githubusercontent.com/8649801/114969882-8616dd00-9e36-11eb-83c3-7400ac63a318.png)
 
 ### User URLs Page (Populated URL Table)
 !["User URLs Page with Populated URL Table"](https://user-images.githubusercontent.com/8649801/114945086-f5c0a400-9e05-11eb-9026-da6e771cab2d.png)
 
 ### Bad Login
-!["Bad Login Page"](https://user-images.githubusercontent.com/8649801/114944899-a8dccd80-9e05-11eb-8578-7f9f0ea3a2f8.png)
+!["Bad Login Page"](https://user-images.githubusercontent.com/8649801/114969929-9d55ca80-9e36-11eb-9c87-10c37a5a46da.png)
 
 ### URL Creation Page
-!["URL Creation Page"](https://user-images.githubusercontent.com/8649801/114944954-bdb96100-9e05-11eb-8d23-19e37b38eb9d.png)
+!["URL Creation Page"](https://user-images.githubusercontent.com/8649801/114969960-acd51380-9e36-11eb-8dfa-ca01f9b21dba.png)
 
 ### Edit URL Page
-!["Edit URL Page"](https://user-images.githubusercontent.com/8649801/114944996-cb6ee680-9e05-11eb-85ed-1a490d83c3e6.png)
+!["Edit URL Page"](https://user-images.githubusercontent.com/8649801/114969974-b52d4e80-9e36-11eb-9ebb-04f9b2e97c2c.png)
+
+### 401 Unauthorized
+!["401 Unauthorized"](https://user-images.githubusercontent.com/8649801/114970006-caa27880-9e36-11eb-97f3-782b7642ac9e.png)
+
+
 
 

@@ -38,7 +38,8 @@ const checkUserLoggedIn = function(req, res, next) {
   next();
 };
 
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(express.static(__dirname + '/public'));
+app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'tinyapp-session',
@@ -46,6 +47,7 @@ app.use(cookieSession({
   maxAge: 1 * 24 * 60 * 60 * 1000 //24 hours
 }));
 app.use(morgan('dev'));
+
 
 app.set("view engine", "ejs");
 

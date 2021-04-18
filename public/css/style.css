@@ -1,0 +1,40 @@
+.btn {
+  border-radius: 0px;
+}
+
+.title{
+  font-family: 'Fugaz One', cursive;
+  text-shadow: 3px 3px 5px rgba(0,0,0,0.2);
+}
+
+.error-message{
+  font-family: 'Fugaz One', cursive;
+  text-shadow: 3px 3px 5px rgba(0,0,0,0.2);
+  font-size: 1.5em;
+}
+
+.context-card {
+  width: 500px; 
+  border-radius: 75px 75px 0px 0px; 
+}
+
+#fadeAlert {
+
+  animation-timing-function: ease-in;
+  animation: fadeAlert 5s;
+
+}
+
+@keyframes fadeAlert {
+  0% {
+    opacity: 1.0;
+  }
+
+  50% {
+    opacity: 1.0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}

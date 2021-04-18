@@ -8,8 +8,11 @@
 }
 
 .form-control {
-  border: none; 
   border-radius: 0px;
+}
+
+.borderless {
+  border: none; 
 }
 
 .subtitle{

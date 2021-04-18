@@ -1,54 +1,32 @@
 <%- include('./partials/_head.ejs') %>
 <%- include('./partials/_social_media.ejs', { loggedIn : loggedIn, username : username }) %>
 
-  <style>
-    #title { 
-
-      animation-timing-function: ease-in;
-      animation: textRotation 1s infinite;
-    
-    }
-
-    @keyframes textRotation {
-      0% { transform: rotate(-1deg); }
-      50% { transform: rotate(1deg);}
-      100% { transform: rotate(-1deg);}
-    }
-
-  </style>
-
-<body>
-  <main>
-
-    <div class="container d-flex justify-content-center align-items-center" style="height: 100vh">
-      <div class="row">
-        <div class="col d-flex flex-column align-items-center">
-          <div class="col d-flex flex-column align-items-center bg-primary text-light py-3" style="width: 500px; border-radius: 75px 75px 0px 0px; ">
-            <div style="height: 75px"></div>
-            <h1 id="title" class="position-absolute text-center px-4" style="top: 50px; line-height: 0px;font-size: 3em; font-family: 'Fugaz One', cursive; text-shadow: 3px 3px 5px rgba(0,0,0,0.2) ;">TinyApp</h1>
-            <h4 class="mb-3" style="font-family: 'Fugaz One', cursive; text-shadow: 3px 3px 5px rgba(0,0,0,0.2) ;">The Tiny URL Shortener</h4>
-            <row>
-              <% if(loggedIn) { %> 
-              <form class="form-inline" action="/urls" method="POST">
-                <input class="form-control" type="text" name="longURL" placeholder="http://" value="http://" style="border: none; border-radius: 0px;">
-                <button class="btn btn-outline-primary text-light my-2" action="submit">GO</button>
-              </form>
-              <% }else{ %>
-                <a class="btn btn-warning text-primary mb-2" href="/login" role="button">Login</a>
-                <a class="btn btn-warning text-primary mb-2" href="/register" role="button">Register</a>
-                <p class="mb-0"><small><a href="/privacy" class="text-light">-> Read the privacy policy</a></small></p>
-              <%  } %>
-            </row>
-          </div>
-          <div class="position-absolute text-right text-primary" style="bottom: -1.5em; right: 20px; font-size: 15px;"><i>it's so tiny!</i></div>
+<main>
+  <div class="container d-flex justify-content-center align-items-center" style="height: 100vh">
+    <div class="row">
+      <div class="col d-flex flex-column align-items-center">
+        <div class="col d-flex flex-column align-items-center bg-primary text-light py-3" style="width: 500px; border-radius: 75px 75px 0px 0px; ">
+          <div style="height: 75px"></div>
+          <h1 id="title" class="position-absolute text-center px-4 title title-animated">TinyApp</h1>
+          <h4 class="mb-3 subtitle" >The Tiny URL Shortener</h4>
+          <row>
+            <% if(loggedIn) { %> 
+            <form class="form-inline" action="/urls" method="POST">
+              <input class="form-control" type="text" name="longURL" placeholder="http://" value="http://" style="border: none; border-radius: 0px;">
+              <button class="btn btn-outline-primary text-light my-2" action="submit">GO</button>
+            </form>
+            <% }else{ %>
+              <a class="btn btn-warning text-primary mb-2" href="/login" role="button">Login</a>
+              <a class="btn btn-warning text-primary mb-2" href="/register" role="button">Register</a>
+              <p class="mb-0"><small><a href="/privacy" class="text-light">-> Read the privacy policy</a></small></p>
+            <%  } %>
+          </row>
         </div>
+        <div class="position-absolute text-right text-primary quip"><i>it's so tiny!</i></div>
       </div>
     </div>
+  </div>
+</main>
 
-  </main>
-  <!-- Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</body>
-</html>
+<%- include('./partials/_footer.ejs') %>
+

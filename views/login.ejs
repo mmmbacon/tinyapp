@@ -1,63 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
- 
-  <%- include('./partials/_head.ejs') %>
+<%- include('./partials/_head.ejs') %>
 
-  <style>
-    h1 { 
+<main>
 
-      animation-timing-function: ease-in;
-      animation: textZoom 1s infinite;
-    
-    }
+  <%- include('partials/_alert.ejs', {success: success, message: message }) %>
 
-    @keyframes textZoom {
-      0% { transform: rotate(-1deg); }
-      50% { transform: rotate(1deg);}
-      100% { transform: rotate(-1deg);}
-    }
-
-  </style>
-
-<body>
-  <main>
-
-    <%- include('partials/_alert', {success: success, message: message }) %>
-
-    <div class="container d-flex justify-content-center align-items-center" style="height: 100vh">
-      <div class="row">
-        <div class="col d-flex flex-column align-items-center">
-          
-          <div class="col d-flex flex-column align-items-center bg-primary text-light py-3" style="width: 500px; border-radius: 75px 75px 0px 0px; ">
-            <div style="height: 75px"></div>
-            <h1 id="title" class="position-absolute text-center px-4" style="top: 50px; line-height: 0px;font-size: 3em; font-family: 'Fugaz One', cursive; text-shadow: 3px 3px 5px rgba(0,0,0,0.2);">Login!</h1>
-            <row>
-              <form class="form" action="/login" method="POST">
-                <div class="input-group mb-2">
-                  <input class="form-control" type="username" name="username" placeholder="username or email"
-                    style="border: none; border-radius: 0px;">
-                </div>
-                <div class="input-group">
-                  <input class="form-control" type="password" name="password" placeholder="password"
-                    style="border: none; border-radius: 0px;">
-                </div>
-                <button class="btn btn-warning text-primary my-2" action="submit">Login</button>
-              </form>
-              <p class="mb-0"><small><a href="/register" class="text-light">Register</a></small></p>
-              <p class="mb-0"><small><a href="/privacy" class="text-light">-> Read the privacy policy</a></small></p>
-            </row>
-          </div>
-          <div class="position-absolute text-right text-primary" style="bottom: -1.5em; right: 20px; font-size: 15px;"><i>it's just what you do!</i></div>
-          
+  <div class="container d-flex justify-content-center align-items-center" style="height: 100vh">
+    <div class="row">
+      <div class="col d-flex flex-column align-items-center"> 
+        <div class="col d-flex flex-column align-items-center bg-primary text-light py-3 context-card">
+          <div style="height: 75px"></div>
+          <h1 id="title" class="position-absolute text-center px-4 title title-animated">Login!</h1>
+          <row>
+            <form class="form" action="/login" method="POST">
+              <div class="input-group mb-2">
+                <input class="form-control" type="username" name="username" placeholder="username or email">
+              </div>
+              <div class="input-group">
+                <input class="form-control" type="password" name="password" placeholder="password">
+              </div>
+              <button class="btn btn-warning text-primary my-2" action="submit">Login</button>
+            </form>
+            <p class="mb-0"><small><a href="/register" class="text-light">Register</a></small></p>
+            <p class="mb-0"><small><a href="/privacy" class="text-light">-> Read the privacy policy</a></small></p>
+          </row>
         </div>
-        
+        <div class="position-absolute text-right text-primary quip"><i>it's just what you do!</i></div>
       </div>
     </div>
+  </div>
+</main>
 
-  </main>
-  <!-- Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</body>
-</html>
+<%- include('./partials/_footer.ejs') %>
+

@@ -2,27 +2,54 @@
   border-radius: 0px;
 }
 
-.title{
-  font-family: 'Fugaz One', cursive;
-  text-shadow: 3px 3px 5px rgba(0,0,0,0.2);
-}
-
-.error-message{
-  font-family: 'Fugaz One', cursive;
-  text-shadow: 3px 3px 5px rgba(0,0,0,0.2);
-  font-size: 1.5em;
-}
-
 .context-card {
   width: 500px; 
   border-radius: 75px 75px 0px 0px; 
 }
 
-#fadeAlert {
+.form-control {
+  border: none; 
+  border-radius: 0px;
+}
 
+.subtitle{
+  font-family: 'Fugaz One', cursive;
+  text-shadow: 3px 3px 5px rgba(0,0,0,0.2);
+  font-size: 1.5em;
+}
+
+.title{
+  font-family: 'Fugaz One', cursive;
+  font-size: 3em;
+  text-shadow: 3px 3px 5px rgba(0,0,0,0.2);
+  top: 50px; 
+  line-height: 0em;
+}
+
+.title-animated { 
+  animation-timing-function: ease-in;
+  animation: textZoom 1s infinite;
+}
+
+@keyframes textZoom {
+  0% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg);}
+  100% { transform: rotate(-1deg);}
+}
+
+.title-rotated {
+  transform: rotate(-5deg);
+}
+
+.quip {
+  bottom: -1.5em; 
+  right: 20px; 
+  font-size: 15px;
+}
+
+#fadeAlert {
   animation-timing-function: ease-in;
   animation: fadeAlert 5s;
-
 }
 
 @keyframes fadeAlert {

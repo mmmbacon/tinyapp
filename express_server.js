@@ -7,10 +7,7 @@ const favicon = require('serve-favicon');
 const path = require('path');
 const morgan = require('morgan');
 const passport = require('passport');
-const { Client } = require('pg')
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
+const db = require("./db/db");
 
 const {
   serializer,
@@ -53,15 +50,6 @@ app.use(cookieSession({
   maxAge: 1 * 24 * 60 * 60 * 1000 //24 hours
 }));
 app.use(morgan('dev'));
-
-const client = new Client({
-  user: process.env.PGUSER,
-  host: 'localhost',
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT,
-});
-client.connect()
 
 let LocalStrategy = require('passport-local').Strategy;
 

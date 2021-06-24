@@ -6,6 +6,12 @@ const cookieSession = require('cookie-session');
 const favicon = require('serve-favicon');
 const path = require('path');
 const morgan = require('morgan');
+const passport = require('passport');
+const { Client } = require('pg')
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 const {
   serializer,
   logIn,
@@ -48,6 +54,32 @@ app.use(cookieSession({
 }));
 app.use(morgan('dev'));
 
+const client = new Client({
+  user: process.env.PGUSER,
+  host: 'localhost',
+  database: process.env.PGDATABASE,
+  password: process.env.PGPASSWORD,
+  port: process.env.PGPORT,
+});
+client.connect()
+
+let LocalStrategy = require('passport-local').Strategy;
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
+
 
 app.set("view engine", "ejs");
 
@@ -56,7 +88,7 @@ const userDatabase = {};
 const urlDatabase = {};
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`Example app listening on port ${PORT} in ${process.env.NODE_ENV} mode!`);
 });
 
 app.get('/', checkUserLoggedIn, (req, res) => {

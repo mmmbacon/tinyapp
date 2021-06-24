@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "start": "./node_modules/.bin/nodemon -L express_server.js"
+    "start": "NODE_ENV=development ./node_modules/.bin/nodemon -L express_server.js"
   },
   "repository": {
     "type": "git",
@@ -28,10 +28,12 @@
     "body-parser": "^1.19.0",
     "bootstrap-icons": "^1.4.1",
     "cookie-session": "^1.4.0",
+    "dotenv": "^10.0.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
     "pg": "^8.6.0",
     "serve-favicon": "^2.5.0"
   },

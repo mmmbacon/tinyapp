@@ -7,19 +7,16 @@ const favicon = require('serve-favicon');
 const path = require('path');
 const morgan = require('morgan');
 const passport = require('passport');
-const db = require("./db/db");
-const { authenticateUser } = require('./lib/auth');
+const { createUser } = require('./lib/auth');
 
 const {
   serializer,
   logIn,
-  getUserByID,
   userDoesExist,
-  createUser,
+  // createUser,
   getUserURLS,
   userDoesOwnURL
 } = require('./helpers');
-const { url } = require("inspector");
 
 /**
  * @description Middleware: Checks if the user is logged in
@@ -44,7 +41,7 @@ const checkUserLoggedIn = function(req, res, next) {
 
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.json());
 app.use(cookieSession({
   name: 'tinyapp-session',
   keys: ['mongoose', 'trouble', 'red', 'peppers', 'photograph', 'genuine'],
@@ -52,22 +49,24 @@ app.use(cookieSession({
 }));
 app.use(morgan('dev'));
 
-let LocalStrategy = require('passport-local').Strategy;
+// let LocalStrategy = require('passport-local').Strategy;
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    });
-  }
-));
+// passport.use(new LocalStrategy(
+//   function(username, password, done) {
+//     User.findOne({ username: username }, function(err, user) {
+//       if (err) {
+//         return done(err);
+//       }
+//       if (!user) {
+//         return done(null, false, { message: 'Incorrect username.' });
+//       }
+//       if (!user.validPassword(password)) {
+//         return done(null, false, { message: 'Incorrect password.' });
+//       }
+//       return done(null, user);
+//     });
+//   }
+// ));
 
 
 app.set("view engine", "ejs");
@@ -244,9 +243,19 @@ app.post("/logout", (req, res) => {
 
 app.post("/register", (req, res) => {
 
-  if (!req.body.username || !req.body.username || !req.body.password) {
+  if (!req.body.email || !req.body.password || !req.body.password_confirmation) {
     return res.status(400).render('register', { success: false, message: 'Please ensure all fields are filled before submitting registration'});
   }
+
+  createUser("password", "password", "email@example.com")
+    .then((result)=>{
+      res.status(200).json({
+        message: 'Successfully created User'
+      });
+    })
+    .catch((err)=>{
+      console.log(err);
+    });
 
   //Check to see if username or email already exist in database
   for (const user of Object.keys(userDatabase)) {
@@ -258,8 +267,8 @@ app.post("/register", (req, res) => {
   }
 
   //Create new user object in database
-  const newUser = createUser(userDatabase, req.body.username, req.body.email, req.body.password);
-  req.session.id = newUser.id;
-  let param = encodeURIComponent('true');
-  res.redirect('/urls?loggedIn=' + param);
+  //const newUser = createUser(userDatabase, req.body.username, req.body.email, req.body.password);
+  //req.session.id = newUser.id;
+  // let param = encodeURIComponent('true');
+  // res.redirect('/urls?loggedIn=' + param);
 });

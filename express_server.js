@@ -8,6 +8,7 @@ const path = require('path');
 const morgan = require('morgan');
 const passport = require('passport');
 const db = require("./db/db");
+const { authenticateUser } = require('./lib/auth');
 
 const {
   serializer,

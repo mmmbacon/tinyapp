@@ -11,19 +11,19 @@
           <div style="height: 75px"></div>
           <h1 id="title" class="position-absolute text-center px-4 title title-animated">Register!</h1>
           <row>
-            <form class="form" action="/register" method="POST">
+            <form class="form" id="registerForm">
               <div class="input-group mb-2">
-                <input class="form-control" type="email" name="email" placeholder="Email">
+                <input class="form-control" id="register_email" type="email" name="email" placeholder="Email">
               </div>
               <div class="input-group mb-2">
-                <input class="form-control" type="password" name="password" placeholder="Password">
+                <input class="form-control" id="register_password" type="password" name="password" placeholder="Password">
               </div>
               <div class="input-group">
-                <input class="form-control" type="password" name="password_confirmation" placeholder="Password confirmation">
+                <input class="form-control" id="register_password_confirmation" type="password" name="password_confirmation" placeholder="Password confirmation">
               </div>
               <p class="my-0"><small>By registering, you automatically agree to the privacy policy</small></p>
               <p class="mb-2"><small><a href="/privacy" class="text-light">-> Read the privacy policy</a></small></p>
-              <button class="btn btn-warning text-primary" action="submit">Register</button>
+              <button class="btn btn-warning text-primary" type="button" onClick="registerUser(event)">Register</button>
             </form>
           </row>
         </div>

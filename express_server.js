@@ -2,12 +2,12 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
-const cookieSession = require('cookie-session');
 const favicon = require('serve-favicon');
 const path = require('path');
 const morgan = require('morgan');
 const passport = require('passport');
 const { createUser } = require('./lib/auth');
+const session = require("express-session");
 
 const {
   serializer,
@@ -41,32 +41,47 @@ const checkUserLoggedIn = function(req, res, next) {
 
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieSession({
-  name: 'tinyapp-session',
-  keys: ['mongoose', 'trouble', 'red', 'peppers', 'photograph', 'genuine'],
-  maxAge: 1 * 24 * 60 * 60 * 1000 //24 hours
-}));
+app.use(express.json());
+app.use(session({ secret: 'keyboard cat'}));
+// app.use(cookieSession({
+//   name: 'tinyapp-session',
+//   keys: ['mongoose', 'trouble', 'red', 'peppers', 'photograph', 'genuine'],
+//   maxAge: 1 * 24 * 60 * 60 * 1000 //24 hours
+// }));
 app.use(morgan('dev'));
+app.use(passport.initialize());
+app.use(passport.session());
 
-// let LocalStrategy = require('passport-local').Strategy;
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+  // if you use Model.id as your idAttribute maybe you'd want
+  // done(null, user.id);
+});
 
-// passport.use(new LocalStrategy(
-//   function(username, password, done) {
-//     User.findOne({ username: username }, function(err, user) {
-//       if (err) {
-//         return done(err);
-//       }
-//       if (!user) {
-//         return done(null, false, { message: 'Incorrect username.' });
-//       }
-//       if (!user.validPassword(password)) {
-//         return done(null, false, { message: 'Incorrect password.' });
-//       }
-//       return done(null, user);
-//     });
-//   }
-// ));
+passport.deserializeUser(function(id, done) {
+  // User.findById(id, function(err, user) {
+  //   done(err, user);
+  // });
+});
+
+let LocalStrategy = require('passport-local').Strategy;
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username }, function(err, user) {
+      if (err) {
+        return done(err);
+      }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
 
 
 app.set("view engine", "ejs");
@@ -90,7 +105,7 @@ app.get('/', checkUserLoggedIn, (req, res) => {
   res.render('home', templateVars);
 });
 
-app.get("/urls", checkUserLoggedIn, (req, res) => {
+app.get("/urls", (req, res) => {
 
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
@@ -152,7 +167,7 @@ app.get("/login", (req, res) => {
   res.render('login', { success: true, message: ""});
 });
 
-app.get("/register", checkUserLoggedIn, (req, res) => {
+app.get("/register", (req, res) => {
 
   if (req.user) {
     res.redirect('/urls');
@@ -215,7 +230,7 @@ app.post("/urls/:id", checkUserLoggedIn, (req, res) => {
   res.redirect(`/urls`);
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", passport.authenticate('local'), (req, res) => {
 
   if (!userDoesExist(req.body.username)) {
     return res.status(403).render('login', { success: false, message: 'Please provide a valid username or password'});
@@ -254,15 +269,20 @@ app.post("/register", (req, res) => {
   }
 
   createUser(req.body.password, req.body.password_confirmation, req.body.email)
-    .then((newUser)=>{
-      console.log(newUser);
-      if (newUser) {
-        req.session.id = newUser.rows[0].id;
-        let param = encodeURIComponent('true');
-        res.redirect('/urls?loggedIn=' + param);
-      }
+    .then((newUser) => newUser.rows[0])
+    .then((user) => {
+      return req.login(user, function(err) {
+        if (err) {
+          return res.status(500).json({
+            message: 'error'
+          });
+        }
+        return res.render();
+      });
     })
-    .catch((err)=>{
-      console.log(err);
+    .catch((err) => {
+      return res.status(500).json({
+        message: 'error'
+      });
     });
 });

@@ -41,7 +41,7 @@ const checkUserLoggedIn = function(req, res, next) {
 
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
-app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({
   name: 'tinyapp-session',
   keys: ['mongoose', 'trouble', 'red', 'peppers', 'photograph', 'genuine'],
@@ -243,6 +243,8 @@ app.post("/logout", (req, res) => {
 
 app.post("/register", (req, res) => {
 
+  console.log(req.body);
+
   if (!req.body.email || !req.body.password || !req.body.password_confirmation) {
     return res.status(400).render('register', { success: false, message: 'Please ensure all fields are filled before submitting registration'});
   }
@@ -252,28 +254,15 @@ app.post("/register", (req, res) => {
   }
 
   createUser(req.body.password, req.body.password_confirmation, req.body.email)
-    .then((result)=>{
-      console.log(result);
-      res.status(200).json({
-        message: 'Successfully created User'
-      });
+    .then((newUser)=>{
+      console.log(newUser);
+      if (newUser) {
+        req.session.id = newUser.rows[0].id;
+        let param = encodeURIComponent('true');
+        res.redirect('/urls?loggedIn=' + param);
+      }
     })
     .catch((err)=>{
       console.log(err);
     });
-
-  //Check to see if username or email already exist in database
-  for (const user of Object.keys(userDatabase)) {
-    if (userDatabase[user].email === req.body.email || userDatabase[user].username === req.body.username) {
-      //TODO: Change this to a proper redirect or alert
-      // Redirect if so
-      return res.status(400).render('login', { success: false, message: 'Username or Email already registered'});
-    }
-  }
-
-  //Create new user object in database
-  //const newUser = createUser(userDatabase, req.body.username, req.body.email, req.body.password);
-  //req.session.id = newUser.id;
-  // let param = encodeURIComponent('true');
-  // res.redirect('/urls?loggedIn=' + param);
 });

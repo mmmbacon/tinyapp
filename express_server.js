@@ -1,19 +1,19 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-const bodyParser = require("body-parser");
 const favicon = require('serve-favicon');
 const path = require('path');
 const morgan = require('morgan');
 const passport = require('passport');
-const { createUser } = require('./lib/auth');
 const session = require("express-session");
+
+const LocalStrategy = require('passport-local').Strategy;
+const { createUser, logIn } = require('./lib/auth');
 
 const {
   serializer,
-  logIn,
+  // logIn,
   userDoesExist,
-  // createUser,
   getUserURLS,
   userDoesOwnURL
 } = require('./helpers');
@@ -39,6 +39,8 @@ const checkUserLoggedIn = function(req, res, next) {
   next();
 };
 
+app.set("view engine", "ejs");
+
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
 app.use(express.json());
@@ -59,32 +61,17 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
+  console.log("deserializing");
   // User.findById(id, function(err, user) {
   //   done(err, user);
   // });
 });
 
-let LocalStrategy = require('passport-local').Strategy;
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function(err, user) {
-      if (err) {
-        return done(err);
-      }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    });
-  }
-));
+passport.use(new LocalStrategy(function(username, password, done) {
+  return logIn(username, password, done);
+}));
 
-
-app.set("view engine", "ejs");
 
 const userDatabase = {};
 
@@ -105,7 +92,7 @@ app.get('/', checkUserLoggedIn, (req, res) => {
   res.render('home', templateVars);
 });
 
-app.get("/urls", (req, res) => {
+app.get("/urls", passport.authenticate('local'), (req, res) => {
 
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
@@ -258,8 +245,6 @@ app.post("/logout", (req, res) => {
 
 app.post("/register", (req, res) => {
 
-  console.log(req.body);
-
   if (!req.body.email || !req.body.password || !req.body.password_confirmation) {
     return res.status(400).render('register', { success: false, message: 'Please ensure all fields are filled before submitting registration'});
   }
@@ -274,15 +259,17 @@ app.post("/register", (req, res) => {
       return req.login(user, function(err) {
         if (err) {
           return res.status(500).json({
-            message: 'error'
+            message: 'Could not Log User In',
+            error: err
           });
         }
-        return res.render();
+        res.send("Success");
       });
     })
     .catch((err) => {
       return res.status(500).json({
-        message: 'error'
+        message: 'Could not Create User',
+        error: err.message
       });
     });
 });

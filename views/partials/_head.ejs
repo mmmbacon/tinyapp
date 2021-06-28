@@ -25,11 +25,15 @@
           headers: {
             'Content-Type' : 'application/json'
           },
+          mode: 'same-origin',
+          referrerPolicy: 'no-referrer',
           body: JSON.stringify({
             email: emailField.value,
             password: passwordField.value,
             password_confirmation: passwordConfirmationField.value
           }),
+        }).then((response) => {
+          window.location.href = '/urls'
         });
       };
     </script>

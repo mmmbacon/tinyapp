@@ -26,6 +26,7 @@
             'Content-Type' : 'application/json'
           },
           mode: 'same-origin',
+          SameSite: 'true',
           referrerPolicy: 'no-referrer',
           body: JSON.stringify({
             email: emailField.value,
@@ -33,7 +34,29 @@
             password_confirmation: passwordConfirmationField.value
           }),
         }).then((response) => {
-          window.location.href = '/urls'
+          //window.location.href = '/urls'
+        });
+      };
+
+      const loginUser = function(event){
+        const emailField = document.getElementById("login_email");
+        const passwordField = document.getElementById("login_password");
+    
+        fetch('/login', {
+          method: 'POST',
+          redirect: 'follow',
+          headers: {
+            'Content-Type' : 'application/json'
+          },
+          SameSite: 'true',
+          mode: 'same-origin',
+          referrerPolicy: 'no-referrer',
+          body: JSON.stringify({
+            email: emailField.value,
+            password: passwordField.value,
+          }),
+        }).then((response) => {
+          //window.location.href = '/urls'
         });
       };
     </script>

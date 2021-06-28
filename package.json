@@ -7,7 +7,8 @@
     "test": "mocha",
     "start": "NODE_ENV=development nodemon -e ejs ./node_modules/.bin/nodemon -L express_server.js",
     "dbreset" : "PGPASSWORD=tinyapp psql tinyapp -h localhost -d tinyapp-development -f db/schema/01_users.sql",
-    "start-debug" : "npm run dbreset  && npm run start"
+    "dbseed" : "PGPASSWORD=tinyapp psql tinyapp -h localhost -d tinyapp-development -f db/seeds/01_users.sql",
+    "start-debug" : "npm run dbreset && npm run start"
   },
   "repository": {
     "type": "git",

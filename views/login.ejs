@@ -11,14 +11,14 @@
           <div style="height: 75px"></div>
           <h1 id="title" class="position-absolute text-center px-4 title title-animated">Login!</h1>
           <row>
-            <form class="form" action="/login" method="POST">
+            <form class="form" id="loginForm">
               <div class="input-group mb-2">
-                <input class="form-control" type="username" name="username" placeholder="username or email">
+                <input class="form-control" id="login_email" type="email" name="email" placeholder="email">
               </div>
               <div class="input-group">
-                <input class="form-control" type="password" name="password" placeholder="password">
+                <input class="form-control" id="login_password" type="password" name="password" placeholder="password">
               </div>
-              <button class="btn btn-warning text-primary my-2" action="submit">Login</button>
+              <button class="btn btn-warning text-primary my-2" type="button" onClick="loginUser(event)">Login</button>
             </form>
             <p class="mb-0"><small><a href="/register" class="text-light">Register</a></small></p>
             <p class="mb-0"><small><a href="/privacy" class="text-light">-> Read the privacy policy</a></small></p>

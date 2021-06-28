@@ -5,10 +5,10 @@ const favicon = require('serve-favicon');
 const path = require('path');
 const morgan = require('morgan');
 const passport = require('passport');
-const session = require("express-session");
+const cookieSession = require('cookie-session');
 
 const LocalStrategy = require('passport-local').Strategy;
-const { createUser, logIn } = require('./lib/auth');
+const { createUser, logIn, getUserById } = require('./lib/auth');
 
 const {
   serializer,
@@ -44,34 +44,40 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
 app.use(express.json());
-app.use(session({ secret: 'keyboard cat'}));
-// app.use(cookieSession({
-//   name: 'tinyapp-session',
-//   keys: ['mongoose', 'trouble', 'red', 'peppers', 'photograph', 'genuine'],
-//   maxAge: 1 * 24 * 60 * 60 * 1000 //24 hours
+// app.use(session({
+//   secret: 'keyboard cat',
+//   SameSite: 'strict',
+//   secure: false
 // }));
+app.use(cookieSession({
+  name: 'tinyapp-session',
+  keys: ['mongoose', 'trouble', 'red', 'peppers', 'photograph', 'genuine'],
+  maxAge: 1 * 24 * 60 * 60 * 1000 //24 hours
+}));
 app.use(morgan('dev'));
-app.use(passport.initialize());
-app.use(passport.session());
+
+passport.use(new LocalStrategy(function(email, password, done) {
+  console.log('logging in with strategy');
+  logIn(email, password, done);
+}));
 
 passport.serializeUser(function(user, done) {
+  console.log('serialize');
   done(null, user.id);
-  // if you use Model.id as your idAttribute maybe you'd want
-  // done(null, user.id);
 });
 
 passport.deserializeUser(function(id, done) {
-  console.log("deserializing");
-  // User.findById(id, function(err, user) {
-  //   done(err, user);
-  // });
+  console.log('deserialize');
+  return getUserById(id)
+    .then((user) => {
+      console.log(user);
+      return done(null, user);
+    })
+    .catch((err) => done(err, null));
 });
 
-
-passport.use(new LocalStrategy(function(username, password, done) {
-  return logIn(username, password, done);
-}));
-
+app.use(passport.initialize());
+app.use(passport.session());
 
 const userDatabase = {};
 
@@ -92,7 +98,7 @@ app.get('/', checkUserLoggedIn, (req, res) => {
   res.render('home', templateVars);
 });
 
-app.get("/urls", passport.authenticate('local'), (req, res) => {
+app.get("/urls", passport.authenticate('session'), (req, res) => {
 
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
@@ -217,7 +223,9 @@ app.post("/urls/:id", checkUserLoggedIn, (req, res) => {
   res.redirect(`/urls`);
 });
 
-app.post("/login", passport.authenticate('local'), (req, res) => {
+app.post("/login", passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }), (req, res) => {
+
+  console.log('ok made it');
 
   if (!userDoesExist(req.body.username)) {
     return res.status(403).render('login', { success: false, message: 'Please provide a valid username or password'});

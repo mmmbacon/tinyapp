@@ -247,8 +247,13 @@ app.post("/register", (req, res) => {
     return res.status(400).render('register', { success: false, message: 'Please ensure all fields are filled before submitting registration'});
   }
 
-  createUser("password", "password", "email@example.com")
+  if (req.body.password !== req.body.password_confirmation) {
+    return res.status(400).render('register', { success: false, message: 'Password does not match password confirmation'});
+  }
+
+  createUser(req.body.password, req.body.password_confirmation, req.body.email)
     .then((result)=>{
+      console.log(result);
       res.status(200).json({
         message: 'Successfully created User'
       });

@@ -56,8 +56,7 @@ app.use(cookieSession({
 }));
 app.use(morgan('dev'));
 
-passport.use(new LocalStrategy(function(email, password, done) {
-  console.log('logging in with strategy');
+passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'password'},function(email, password, done) {
   logIn(email, password, done);
 }));
 
@@ -107,7 +106,6 @@ app.get("/urls", passport.authenticate('session'), (req, res) => {
   const templateVars = {
     id: req.user.id,
     urls: getUserURLS(urlDatabase, req.user.id),
-    username: req.user.username,
     email: req.user.email,
     success: true,
     message: req.query.loggedIn === 'true' ? 'Succesfully Logged in' : '',
@@ -223,24 +221,9 @@ app.post("/urls/:id", checkUserLoggedIn, (req, res) => {
   res.redirect(`/urls`);
 });
 
-app.post("/login", passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }), (req, res) => {
+app.post("/login", passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login'}), (req, res) => {
 
-  console.log('ok made it');
-
-  if (!userDoesExist(req.body.username)) {
-    return res.status(403).render('login', { success: false, message: 'Please provide a valid username or password'});
-  }
-
-  const userID = logIn(userDatabase, req.body.username, req.body.password);
-
-  //Log user in and check for failure
-  if (!userID) {
-    return res.status(403).render('login', { success: false, message: 'Could not log user in'});
-  }
-
-  req.session.id = userID;
-  let param = encodeURIComponent('true');
-  res.redirect('/urls?loggedIn=' + param);
+  res.send("Success");
 
 });
 

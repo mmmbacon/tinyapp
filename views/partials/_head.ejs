@@ -34,14 +34,13 @@
             password_confirmation: passwordConfirmationField.value
           }),
         }).then((response) => {
-          //window.location.href = '/urls'
+          window.location.href = '/urls'
         });
       };
 
       const loginUser = function(event){
         const emailField = document.getElementById("login_email");
         const passwordField = document.getElementById("login_password");
-    
         fetch('/login', {
           method: 'POST',
           redirect: 'follow',
@@ -56,7 +55,7 @@
             password: passwordField.value,
           }),
         }).then((response) => {
-          //window.location.href = '/urls'
+          window.location.href = '/urls'
         });
       };
     </script>

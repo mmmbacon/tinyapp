@@ -61,17 +61,12 @@ passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'passwor
 }));
 
 passport.serializeUser(function(user, done) {
-  console.log('serialize');
   done(null, user.id);
 });
 
 passport.deserializeUser(function(id, done) {
-  console.log('deserialize');
   return getUserById(id)
-    .then((user) => {
-      console.log(user);
-      return done(null, user);
-    })
+    .then((user) => done(null, user))
     .catch((err) => done(err, null));
 });
 

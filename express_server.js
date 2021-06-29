@@ -1,21 +1,22 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-const bodyParser = require("body-parser");
-const cookieSession = require('cookie-session');
 const favicon = require('serve-favicon');
 const path = require('path');
 const morgan = require('morgan');
+const passport = require('passport');
+const cookieSession = require('cookie-session');
+
+const LocalStrategy = require('passport-local').Strategy;
+const { createUser, logIn, getUserById } = require('./lib/auth');
+
 const {
   serializer,
-  logIn,
-  getUserByID,
+  // logIn,
   userDoesExist,
-  createUser,
   getUserURLS,
   userDoesOwnURL
 } = require('./helpers');
-const { url } = require("inspector");
 
 /**
  * @description Middleware: Checks if the user is logged in
@@ -38,9 +39,16 @@ const checkUserLoggedIn = function(req, res, next) {
   next();
 };
 
+app.set("view engine", "ejs");
+
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.json());
+// app.use(session({
+//   secret: 'keyboard cat',
+//   SameSite: 'strict',
+//   secure: false
+// }));
 app.use(cookieSession({
   name: 'tinyapp-session',
   keys: ['mongoose', 'trouble', 'red', 'peppers', 'photograph', 'genuine'],
@@ -48,15 +56,29 @@ app.use(cookieSession({
 }));
 app.use(morgan('dev'));
 
+passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'password'},function(email, password, done) {
+  logIn(email, password, done);
+}));
 
-app.set("view engine", "ejs");
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  return getUserById(id)
+    .then((user) => done(null, user))
+    .catch((err) => done(err, null));
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 const userDatabase = {};
 
 const urlDatabase = {};
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`Example app listening on port ${PORT} in ${process.env.NODE_ENV} mode!`);
 });
 
 app.get('/', checkUserLoggedIn, (req, res) => {
@@ -70,7 +92,7 @@ app.get('/', checkUserLoggedIn, (req, res) => {
   res.render('home', templateVars);
 });
 
-app.get("/urls", checkUserLoggedIn, (req, res) => {
+app.get("/urls", passport.authenticate('session'), (req, res) => {
 
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
@@ -79,7 +101,6 @@ app.get("/urls", checkUserLoggedIn, (req, res) => {
   const templateVars = {
     id: req.user.id,
     urls: getUserURLS(urlDatabase, req.user.id),
-    username: req.user.username,
     email: req.user.email,
     success: true,
     message: req.query.loggedIn === 'true' ? 'Succesfully Logged in' : '',
@@ -132,7 +153,7 @@ app.get("/login", (req, res) => {
   res.render('login', { success: true, message: ""});
 });
 
-app.get("/register", checkUserLoggedIn, (req, res) => {
+app.get("/register", (req, res) => {
 
   if (req.user) {
     res.redirect('/urls');
@@ -195,22 +216,9 @@ app.post("/urls/:id", checkUserLoggedIn, (req, res) => {
   res.redirect(`/urls`);
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login'}), (req, res) => {
 
-  if (!userDoesExist(req.body.username)) {
-    return res.status(403).render('login', { success: false, message: 'Please provide a valid username or password'});
-  }
-
-  const userID = logIn(userDatabase, req.body.username, req.body.password);
-
-  //Log user in and check for failure
-  if (!userID) {
-    return res.status(403).render('login', { success: false, message: 'Could not log user in'});
-  }
-
-  req.session.id = userID;
-  let param = encodeURIComponent('true');
-  res.redirect('/urls?loggedIn=' + param);
+  res.send("Success");
 
 });
 
@@ -223,22 +231,31 @@ app.post("/logout", (req, res) => {
 
 app.post("/register", (req, res) => {
 
-  if (!req.body.username || !req.body.username || !req.body.password) {
+  if (!req.body.email || !req.body.password || !req.body.password_confirmation) {
     return res.status(400).render('register', { success: false, message: 'Please ensure all fields are filled before submitting registration'});
   }
 
-  //Check to see if username or email already exist in database
-  for (const user of Object.keys(userDatabase)) {
-    if (userDatabase[user].email === req.body.email || userDatabase[user].username === req.body.username) {
-      //TODO: Change this to a proper redirect or alert
-      // Redirect if so
-      return res.status(400).render('login', { success: false, message: 'Username or Email already registered'});
-    }
+  if (req.body.password !== req.body.password_confirmation) {
+    return res.status(400).render('register', { success: false, message: 'Password does not match password confirmation'});
   }
 
-  //Create new user object in database
-  const newUser = createUser(userDatabase, req.body.username, req.body.email, req.body.password);
-  req.session.id = newUser.id;
-  let param = encodeURIComponent('true');
-  res.redirect('/urls?loggedIn=' + param);
+  createUser(req.body.password, req.body.password_confirmation, req.body.email)
+    .then((newUser) => newUser.rows[0])
+    .then((user) => {
+      return req.login(user, function(err) {
+        if (err) {
+          return res.status(500).json({
+            message: 'Could not Log User In',
+            error: err
+          });
+        }
+        res.send("Success");
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: 'Could not Create User',
+        error: err.message
+      });
+    });
 });

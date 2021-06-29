@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "start": "./node_modules/.bin/nodemon -L express_server.js"
+    "start": "NODE_ENV=development nodemon -e ejs ./node_modules/.bin/nodemon -L express_server.js",
+    "dbreset" : "PGPASSWORD=tinyapp psql tinyapp -h localhost -d tinyapp-development -f db/schema/01_users.sql",
+    "dbseed" : "PGPASSWORD=tinyapp psql tinyapp -h localhost -d tinyapp-development -f db/seeds/01_users.sql",
+    "start-debug" : "npm run dbreset && npm run start"
   },
   "repository": {
     "type": "git",
@@ -28,14 +31,21 @@
     "body-parser": "^1.19.0",
     "bootstrap-icons": "^1.4.1",
     "cookie-session": "^1.4.0",
+    "dotenv": "^10.0.0",
     "ejs": "^3.1.6",
+    "email-validator": "^2.0.4",
     "express": "^4.17.1",
+    "express-session": "^1.17.2",
     "morgan": "^1.10.0",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "pg": "^8.6.0",
     "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
+    "eslint": "^7.29.0",
     "mocha": "^8.3.2",
     "nodemon": "^2.0.7"
   }

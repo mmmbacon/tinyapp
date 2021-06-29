@@ -14,6 +14,50 @@
         document.cookies = "tinyapp-session=; SameSite=None; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=localhost; path=/;";
         window.location.reload();
       }
+
+      const registerUser = function(event){
+        const emailField = document.getElementById("register_email");
+        const passwordField = document.getElementById("register_password");
+        const passwordConfirmationField = document.getElementById("register_password_confirmation");
+        fetch('/register', {
+          method: 'POST',
+          redirect: 'follow',
+          headers: {
+            'Content-Type' : 'application/json'
+          },
+          mode: 'same-origin',
+          SameSite: 'true',
+          referrerPolicy: 'no-referrer',
+          body: JSON.stringify({
+            email: emailField.value,
+            password: passwordField.value,
+            password_confirmation: passwordConfirmationField.value
+          }),
+        }).then((response) => {
+          window.location.href = '/urls'
+        });
+      };
+
+      const loginUser = function(event){
+        const emailField = document.getElementById("login_email");
+        const passwordField = document.getElementById("login_password");
+        fetch('/login', {
+          method: 'POST',
+          redirect: 'follow',
+          headers: {
+            'Content-Type' : 'application/json'
+          },
+          SameSite: 'true',
+          mode: 'same-origin',
+          referrerPolicy: 'no-referrer',
+          body: JSON.stringify({
+            email: emailField.value,
+            password: passwordField.value,
+          }),
+        }).then((response) => {
+          window.location.href = '/urls'
+        });
+      };
     </script>
   </head>
   <body>

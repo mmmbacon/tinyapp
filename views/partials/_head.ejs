@@ -36,6 +36,26 @@
         });
       }
 
+      const updateUrl = function(){
+        console.log('submitting')
+        const shortUrl = document.getElementById("urlshow_shorturl");
+        fetch(`/urls/${shortUrl}`, {
+          method: 'POST',
+          redirect: 'follow',
+          headers: {
+            'Content-Type' : 'application/json'
+          },
+          mode: 'same-origin',
+          SameSite: 'true',
+          referrerPolicy: 'no-referrer',
+          body: JSON.stringify({
+            short_url: shortUrl.value,
+          })
+        }).then((response)=>{
+          window.location.href = '/urls'
+        });
+      }
+
       const registerUser = function(event){
         const emailField = document.getElementById("register_email");
         const passwordField = document.getElementById("register_password");

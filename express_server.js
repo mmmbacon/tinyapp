@@ -9,7 +9,7 @@ const cookieSession = require('cookie-session');
 
 const LocalStrategy = require('passport-local').Strategy;
 const { createUser, logIn, getUserById } = require('./lib/auth');
-const { createUrl, getUrlsForUser } = require('./lib/urls');
+const { createUrl, getUrlsForUser, getUrl, updateUrl } = require('./lib/urls');
 
 const {
   serializer,
@@ -123,7 +123,7 @@ app.get("/urls", passport.authenticate('session'), (req, res) => {
 
 });
 
-app.get("/urls/new", checkUserLoggedIn, (req, res) => {
+app.get("/urls/new", passport.authenticate('session'), (req, res) => {
 
   if (!req.user) {
     return res.status(401).redirect('/');
@@ -137,20 +137,32 @@ app.get("/urls/new", checkUserLoggedIn, (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-app.get("/urls/:shortURL", checkUserLoggedIn, (req, res) => {
+app.get("/urls/:shortURL", passport.authenticate('session'), (req, res) => {
   
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    username: req.user.username,
-    email: req.user.email,
-  };
+  getUrl(req.params.shortURL)
+    .then((urls) => urls.rows[0])
+    .then((url) => {
+      const templateVars = {
+        short_url: url.short_url,
+        long_url: url.long_url,
+        username: req.user.username,
+        email: req.user.email,
+      };
+    
+      return res.render("urls_show", templateVars);
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: 'Could not get URL',
+        error: err.message
+      });
+    });
 
-  res.render("urls_show", templateVars);
+  
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -206,7 +218,7 @@ app.post("/urls", passport.authenticate('session'), (req, res) => {
 
 });
 
-app.post("/urls/:shortURL/delete", checkUserLoggedIn, (req, res) => {
+app.post("/urls/:shortURL/delete", passport.authenticate('session'), (req, res) => {
 
 
   if (!req.user) {
@@ -221,18 +233,23 @@ app.post("/urls/:shortURL/delete", checkUserLoggedIn, (req, res) => {
   res.redirect(`/urls`);
 });
 
-app.post("/urls/:id", checkUserLoggedIn, (req, res) => {
+app.post("/urls/:id", passport.authenticate('session'), (req, res) => {
 
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
-  if (!userDoesOwnURL(urlDatabase, req.params.id, req.user.id)) {
-    return res.status(401).render('error', { title: 'Oh no you didn\'t!', message: 'You don\'t own that URL!' });
-  }
-
-  urlDatabase[req.params.id].longURL = req.body.url;
-  res.redirect(`/urls`);
+  updateUrl(req.params.id, req.user.id)
+    .then((urls) => urls.rows[0])
+    .then((url) => {
+      return res.send("Success");
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: 'Could not update URL',
+        error: err.message
+      });
+    });
 });
 
 app.post("/login", passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login'}), (req, res) => {

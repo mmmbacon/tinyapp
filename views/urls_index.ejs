@@ -23,8 +23,8 @@
           <td class="align-middle"><a href="<%= urls[url].long_url %>" target="_blank"><%= urls[url].long_url %></a></td>
           <td class="align-middle"><a href="/urls/<%= urls[url].short_url %>" target="_blank">Edit</a></td>
           <td class="align-middle text-center">
-            <form method="POST" action="/urls/<%= url %>/delete" id="form1">
-              <button class="btn btn-outline-danger" type="submit" form="form1" value="Submit">Delete</button>
+            <form id="form1">
+              <button class="btn btn-outline-danger" type="button" form="form1" value="Submit" data-id="<%= urls[url].short_url%>" onClick="deleteUrl(event)">Delete</button>
             </form>
           </td>
         </tr>

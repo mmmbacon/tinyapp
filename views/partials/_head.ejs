@@ -17,6 +17,25 @@
         window.location.reload();
       }
 
+      const deleteUrl = function(event){
+        const shortUrl = event.target.dataset.id;
+        fetch(`/urls/${shortUrl}/delete`, {
+          method: 'POST',
+          redirect: 'follow',
+          headers: {
+            'Content-Type' : 'application/json'
+          },
+          mode: 'same-origin',
+          SameSite: 'true',
+          referrerPolicy: 'no-referrer',
+          body: JSON.stringify({
+            short_url: shortUrl,
+          })
+        }).then((response)=>{
+          window.location.href = '/urls'
+        });
+      }
+
       const createNewUrl = function(){
         const longUrl = document.getElementById("url_longurl");
         fetch('/urls', {
@@ -37,7 +56,6 @@
       }
 
       const updateUrl = function(){
-        console.log('submitting')
         const shortUrl = document.getElementById("urlshow_shorturl");
         fetch(`/urls/${shortUrl}`, {
           method: 'POST',

@@ -9,13 +9,13 @@ const cookieSession = require('cookie-session');
 
 const LocalStrategy = require('passport-local').Strategy;
 const { createUser, logIn, getUserById } = require('./lib/auth');
-const { createUrl, getUrlsForUser, getUrl, updateUrl } = require('./lib/urls');
+const { createUrl, getUrlsForUser, getUrl, updateUrl, deleteUrl } = require('./lib/urls');
 
 const {
-  serializer,
+  // serializer,
   // logIn,
   // userDoesExist,
-  getUserURLS,
+  // getUserURLS,
   userDoesOwnURL
 } = require('./helpers');
 
@@ -220,17 +220,31 @@ app.post("/urls", passport.authenticate('session'), (req, res) => {
 
 app.post("/urls/:shortURL/delete", passport.authenticate('session'), (req, res) => {
 
-
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
-  if (!userDoesOwnURL(urlDatabase, req.params.shortURL, req.user.id)) {
-    return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. You don\'t own that URL!'});
-  }
+  console.log(req.body.short_url, req.user.id);
 
-  delete urlDatabase[req.params.shortURL];
-  res.redirect(`/urls`);
+  deleteUrl(req.body.short_url, req.user.id)
+    .then((urls) => urls.rows[0])
+    .then((urls) => {
+      const templateVars = {
+        id: req.user.id,
+        urls: urls,
+        email: req.user.email,
+        success: true,
+        message: req.query.loggedIn === 'true' ? 'Succesfully Logged in' : '',
+      };
+      
+      res.render('urls_index', templateVars);
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: 'Could not Delete URL',
+        error: err.message
+      });
+    });
 });
 
 app.post("/urls/:id", passport.authenticate('session'), (req, res) => {

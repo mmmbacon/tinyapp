@@ -3,9 +3,9 @@
     "version": "2.1.0",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -329,
-    "scrollLeft": -392,
-    "zoomLevel": 0.9,
+    "scrollTop": -345,
+    "scrollLeft": -818,
+    "zoomLevel": 0.8,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -19,7 +19,7 @@
     },
     "database": "MySQL",
     "databaseName": "",
-    "canvasType": "ERD",
+    "canvasType": "SQLDDL",
     "language": "GraphQL",
     "tableCase": "pascalCase",
     "columnCase": "camelCase",
@@ -115,10 +115,10 @@
           }
         ],
         "ui": {
-          "active": true,
+          "active": false,
           "left": 607.5555555555555,
           "top": 427.8888888888889,
-          "zIndex": 63,
+          "zIndex": 2,
           "widthName": 60,
           "widthComment": 60
         },
@@ -225,7 +225,7 @@
           "active": false,
           "left": 1276.6666666666654,
           "top": 460.44444444444446,
-          "zIndex": 59,
+          "zIndex": 1,
           "widthName": 60,
           "widthComment": 60
         },

@@ -9,11 +9,12 @@ const cookieSession = require('cookie-session');
 
 const LocalStrategy = require('passport-local').Strategy;
 const { createUser, logIn, getUserById } = require('./lib/auth');
+const { createUrl, getUrlsForUser } = require('./lib/urls');
 
 const {
   serializer,
   // logIn,
-  userDoesExist,
+  // userDoesExist,
   getUserURLS,
   userDoesOwnURL
 } = require('./helpers');
@@ -98,15 +99,27 @@ app.get("/urls", passport.authenticate('session'), (req, res) => {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
-  const templateVars = {
-    id: req.user.id,
-    urls: getUserURLS(urlDatabase, req.user.id),
-    email: req.user.email,
-    success: true,
-    message: req.query.loggedIn === 'true' ? 'Succesfully Logged in' : '',
-  };
+  getUrlsForUser(req.user.id)
+    .then((urls) => urls.rows)
+    .then((urls) => {
+      const templateVars = {
+        id: req.user.id,
+        urls: urls,
+        email: req.user.email,
+        success: true,
+        message: req.query.loggedIn === 'true' ? 'Succesfully Logged in' : '',
+      };
+      
+      res.render('urls_index', templateVars);
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: 'Could not get URL\'s',
+        error: err.message
+      });
+    });
+
   
-  res.render('urls_index', templateVars);
 
 });
 
@@ -171,20 +184,26 @@ app.get("*", (req, res) => {
   res.redirect('/urls');
 });
 
-app.post("/urls", checkUserLoggedIn, (req, res) => {
+app.post("/urls", passport.authenticate('session'), (req, res) => {
+
+  console.log('creating url');
 
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
-  const random = serializer();
+  createUrl(req.body.longUrl, req.user.id)
+    .then((url) => url.rows[0])
+    .then((url)=>{
+      return res.send("Success");
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: 'Could not Create URL',
+        error: err.message
+      });
+    });
 
-  urlDatabase[random] = {
-    longURL: req.body.longURL,
-    userID: req.user.id
-  };
-
-  res.redirect(`/urls/${random}`);
 });
 
 app.post("/urls/:shortURL/delete", checkUserLoggedIn, (req, res) => {

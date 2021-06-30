@@ -17,6 +17,25 @@
         window.location.reload();
       }
 
+      const createNewUrl = function(){
+        const longUrl = document.getElementById("url_longurl");
+        fetch('/urls', {
+          method: 'POST',
+          redirect: 'follow',
+          headers: {
+            'Content-Type' : 'application/json'
+          },
+          mode: 'same-origin',
+          SameSite: 'true',
+          referrerPolicy: 'no-referrer',
+          body: JSON.stringify({
+            longUrl: longUrl.value,
+          })
+        }).then((response)=>{
+          window.location.href = '/urls'
+        });
+      }
+
       const registerUser = function(event){
         const emailField = document.getElementById("register_email");
         const passwordField = document.getElementById("register_password");

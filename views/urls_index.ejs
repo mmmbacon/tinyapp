@@ -20,8 +20,8 @@
       <% for(let url in urls) { %>
         <tr>
           <td class="align-middle pl-4"><%= urls[url].short_url %></td>
-          <td class="align-middle"><a href="<%= urls[url].long_url %>"><%= urls[url].long_url %></a></td>
-          <td class="align-middle"><a href="/urls/<%= urls[url].short_url %>">Edit</a></td>
+          <td class="align-middle"><a href="<%= urls[url].long_url %>" target="_blank"><%= urls[url].long_url %></a></td>
+          <td class="align-middle"><a href="/urls/<%= urls[url].short_url %>" target="_blank">Edit</a></td>
           <td class="align-middle text-center">
             <form method="POST" action="/urls/<%= url %>/delete" id="form1">
               <button class="btn btn-outline-danger" type="submit" form="form1" value="Submit">Delete</button>

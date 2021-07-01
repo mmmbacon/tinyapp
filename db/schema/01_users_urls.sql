@@ -21,7 +21,7 @@ CREATE TABLE urls
   id        SERIAL NOT NULL,
   short_url VARCHAR NULL    ,
   long_url  VARCHAR NULL    ,
-  user_id   INTEGER NOT NULL,
+  user_id   INTEGER NULL,
   PRIMARY KEY (id)
 );
 

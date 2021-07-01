@@ -1,0 +1,20 @@
+<%- include('partials/_head.ejs') %>
+
+<%- include('partials/_header.ejs', { username : username, email : email }) %>
+
+<div class="card text-center">
+    <div class="card-header"></div>
+    <div class="card-body">
+      <h5 class="card-title">TinyURL for: <a href="<%= long_url %>" target="_blank"><%= long_url %></a></h5>
+      <p class="card-text">Short URL: <a href="/u/<%= short_url %>" target="_blank"><%= short_url %></a></p>
+      <h3>Edit URL</h3>
+      <form id="form2">
+        <span class="mr-2">New URL:</span> 
+        <input type="text" name="url" id="urlshow_shorturl"/>
+        <button class="btn btn-primary ml-3" type="button" onClick="updateUrl()">Submit</button>
+      </form>
+    </div>
+  <div class="card-footer text-muted"></div>
+</div>
+
+<%- include('./partials/_footer.ejs') %>

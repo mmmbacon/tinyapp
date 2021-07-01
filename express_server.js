@@ -6,39 +6,9 @@ const path = require('path');
 const morgan = require('morgan');
 const passport = require('passport');
 const cookieSession = require('cookie-session');
-
 const LocalStrategy = require('passport-local').Strategy;
 const { createUser, logIn, getUserById } = require('./lib/auth');
 const { createUrl, getUrlsForUser, getUrl, updateUrl, deleteUrl } = require('./lib/urls');
-
-const {
-  // serializer,
-  // logIn,
-  // userDoesExist,
-  // getUserURLS,
-  userDoesOwnURL
-} = require('./helpers');
-
-/**
- * @description Middleware: Checks if the user is logged in
- * @param {string} cookieID The value from the 'id' cookie value
- * @returns {bool} True if the user is logged in
- */
-const checkUserLoggedIn = function(req, res, next) {
-
-  for (const id of Object.keys(userDatabase)) {
-    if (id === req.session.id) {
-      req.user = {
-        id: userDatabase[id].id,
-        username: userDatabase[id].username,
-        urls: userDatabase[id].urls,
-        email: userDatabase[id].email
-      };
-    }
-  }
-
-  next();
-};
 
 app.set("view engine", "ejs");
 
@@ -74,15 +44,11 @@ passport.deserializeUser(function(id, done) {
 app.use(passport.initialize());
 app.use(passport.session());
 
-const userDatabase = {};
-
-const urlDatabase = {};
-
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT} in ${process.env.NODE_ENV} mode!`);
 });
 
-app.get('/', checkUserLoggedIn, (req, res) => {
+app.get('/', passport.authenticate('session'), (req, res) => {
 
   const templateVars = {
     email: req.user ? req.user.email : null,
@@ -197,8 +163,6 @@ app.get("*", (req, res) => {
 });
 
 app.post("/urls", passport.authenticate('session'), (req, res) => {
-
-  console.log('creating url');
 
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});

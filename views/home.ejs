@@ -11,9 +11,9 @@
           <h4 class="mb-3 subtitle" >The Tiny URL Shortener</h4>
           <row>
             <% if(loggedIn) { %> 
-            <form class="form-inline" action="/urls" method="POST">
-              <input class="form-control" type="text" name="longURL" placeholder="http://" value="http://" style="border: none; border-radius: 0px;">
-              <button class="btn btn-outline-primary text-light my-2" action="submit">GO</button>
+            <form class="form-inline">
+              <input class="form-control" id="url_longurl" type="text" name="longURL" placeholder="http://" style="border: none; border-radius: 0px;" autofocus>
+              <button class="btn btn-outline-primary text-light my-2" type="button" onClick="createNewUrl()">GO</button>
             </form>
             <% }else{ %>
               <a class="btn btn-warning text-primary mb-2" href="/login" role="button">Login</a>

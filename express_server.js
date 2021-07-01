@@ -6,38 +6,9 @@ const path = require('path');
 const morgan = require('morgan');
 const passport = require('passport');
 const cookieSession = require('cookie-session');
-
 const LocalStrategy = require('passport-local').Strategy;
 const { createUser, logIn, getUserById } = require('./lib/auth');
-
-const {
-  serializer,
-  // logIn,
-  userDoesExist,
-  getUserURLS,
-  userDoesOwnURL
-} = require('./helpers');
-
-/**
- * @description Middleware: Checks if the user is logged in
- * @param {string} cookieID The value from the 'id' cookie value
- * @returns {bool} True if the user is logged in
- */
-const checkUserLoggedIn = function(req, res, next) {
-
-  for (const id of Object.keys(userDatabase)) {
-    if (id === req.session.id) {
-      req.user = {
-        id: userDatabase[id].id,
-        username: userDatabase[id].username,
-        urls: userDatabase[id].urls,
-        email: userDatabase[id].email
-      };
-    }
-  }
-
-  next();
-};
+const { createUrl, getUrlsForUser, getUrl, updateUrl, deleteUrl } = require('./lib/urls');
 
 app.set("view engine", "ejs");
 
@@ -73,15 +44,11 @@ passport.deserializeUser(function(id, done) {
 app.use(passport.initialize());
 app.use(passport.session());
 
-const userDatabase = {};
-
-const urlDatabase = {};
-
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT} in ${process.env.NODE_ENV} mode!`);
 });
 
-app.get('/', checkUserLoggedIn, (req, res) => {
+app.get('/', passport.authenticate('session'), (req, res) => {
 
   const templateVars = {
     email: req.user ? req.user.email : null,
@@ -98,19 +65,31 @@ app.get("/urls", passport.authenticate('session'), (req, res) => {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
-  const templateVars = {
-    id: req.user.id,
-    urls: getUserURLS(urlDatabase, req.user.id),
-    email: req.user.email,
-    success: true,
-    message: req.query.loggedIn === 'true' ? 'Succesfully Logged in' : '',
-  };
+  getUrlsForUser(req.user.id)
+    .then((urls) => urls.rows)
+    .then((urls) => {
+      const templateVars = {
+        id: req.user.id,
+        urls: urls,
+        email: req.user.email,
+        success: true,
+        message: req.query.loggedIn === 'true' ? 'Succesfully Logged in' : '',
+      };
+      
+      res.render('urls_index', templateVars);
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: 'Could not get URL\'s',
+        error: err.message
+      });
+    });
+
   
-  res.render('urls_index', templateVars);
 
 });
 
-app.get("/urls/new", checkUserLoggedIn, (req, res) => {
+app.get("/urls/new", passport.authenticate('session'), (req, res) => {
 
   if (!req.user) {
     return res.status(401).redirect('/');
@@ -124,20 +103,32 @@ app.get("/urls/new", checkUserLoggedIn, (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-app.get("/urls/:shortURL", checkUserLoggedIn, (req, res) => {
+app.get("/urls/:shortURL", passport.authenticate('session'), (req, res) => {
   
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    username: req.user.username,
-    email: req.user.email,
-  };
+  getUrl(req.params.shortURL)
+    .then((urls) => urls.rows[0])
+    .then((url) => {
+      const templateVars = {
+        short_url: url.short_url,
+        long_url: url.long_url,
+        username: req.user.username,
+        email: req.user.email,
+      };
+    
+      return res.render("urls_show", templateVars);
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: 'Could not get URL',
+        error: err.message
+      });
+    });
 
-  res.render("urls_show", templateVars);
+  
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -171,49 +162,72 @@ app.get("*", (req, res) => {
   res.redirect('/urls');
 });
 
-app.post("/urls", checkUserLoggedIn, (req, res) => {
+app.post("/urls", passport.authenticate('session'), (req, res) => {
 
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
-  const random = serializer();
+  createUrl(req.body.longUrl, req.user.id)
+    .then((url) => url.rows[0])
+    .then((url)=>{
+      return res.send("Success");
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: 'Could not Create URL',
+        error: err.message
+      });
+    });
 
-  urlDatabase[random] = {
-    longURL: req.body.longURL,
-    userID: req.user.id
-  };
-
-  res.redirect(`/urls/${random}`);
 });
 
-app.post("/urls/:shortURL/delete", checkUserLoggedIn, (req, res) => {
-
+app.post("/urls/:shortURL/delete", passport.authenticate('session'), (req, res) => {
 
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
-  if (!userDoesOwnURL(urlDatabase, req.params.shortURL, req.user.id)) {
-    return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. You don\'t own that URL!'});
-  }
+  console.log(req.body.short_url, req.user.id);
 
-  delete urlDatabase[req.params.shortURL];
-  res.redirect(`/urls`);
+  deleteUrl(req.body.short_url, req.user.id)
+    .then((urls) => urls.rows[0])
+    .then((urls) => {
+      const templateVars = {
+        id: req.user.id,
+        urls: urls,
+        email: req.user.email,
+        success: true,
+        message: req.query.loggedIn === 'true' ? 'Succesfully Logged in' : '',
+      };
+      
+      res.render('urls_index', templateVars);
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: 'Could not Delete URL',
+        error: err.message
+      });
+    });
 });
 
-app.post("/urls/:id", checkUserLoggedIn, (req, res) => {
+app.post("/urls/:id", passport.authenticate('session'), (req, res) => {
 
   if (!req.user) {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
-  if (!userDoesOwnURL(urlDatabase, req.params.id, req.user.id)) {
-    return res.status(401).render('error', { title: 'Oh no you didn\'t!', message: 'You don\'t own that URL!' });
-  }
-
-  urlDatabase[req.params.id].longURL = req.body.url;
-  res.redirect(`/urls`);
+  updateUrl(req.params.id, req.user.id)
+    .then((urls) => urls.rows[0])
+    .then((url) => {
+      return res.send("Success");
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: 'Could not update URL',
+        error: err.message
+      });
+    });
 });
 
 app.post("/login", passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login'}), (req, res) => {

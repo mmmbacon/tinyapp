@@ -6,25 +6,25 @@
   <%- include('partials/_header.ejs', { email: email }) %>
   <%- include('partials/_alert.ejs', {success: success, message: message }) %>
 
-  <h3 class="m-2">My URLs</h3>
+  <h3 class="m-4">My URLs</h3>
   <table class="table">
     <thead>
       <tr>
-        <th scope="col">Short URL</th>
+        <th scope="col" class="pl-4">Short URL</th>
         <th scope="col">Long URL</th>
         <th scope="col">Edit</th>
-        <th scope="col">Delete</th>
+        <th scope="col" class="text-center">Delete</th>
       </tr>
     </thead>
     <tbody>
       <% for(let url in urls) { %>
         <tr>
-          <td><%= url %></td>
-          <td><%= urls[url].longURL %></td>
-          <td><a href="/urls/<%= url %>">Edit</a></td>
-          <td>
-            <form method="POST" action="/urls/<%= url %>/delete" id="form1">
-              <button class="btn btn-outline-danger" type="submit" form="form1" value="Submit">Delete</button>
+          <td class="align-middle pl-4"><%= urls[url].short_url %></td>
+          <td class="align-middle"><a href="<%= urls[url].long_url %>" target="_blank"><%= urls[url].long_url %></a></td>
+          <td class="align-middle"><a href="/urls/<%= urls[url].short_url %>" target="_blank">Edit</a></td>
+          <td class="align-middle text-center">
+            <form id="form1">
+              <button class="btn btn-outline-danger" type="button" form="form1" value="Submit" data-id="<%= urls[url].short_url%>" onClick="deleteUrl(event)">Delete</button>
             </form>
           </td>
         </tr>

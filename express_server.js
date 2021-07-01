@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = process.env.PORT || 5000; // default port 8080
 const favicon = require('serve-favicon');
 const path = require('path');
 const morgan = require('morgan');
@@ -15,11 +15,6 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
 app.use(express.json());
-// app.use(session({
-//   secret: 'keyboard cat',
-//   SameSite: 'strict',
-//   secure: false
-// }));
 app.use(cookieSession({
   name: 'tinyapp-session',
   keys: ['mongoose', 'trouble', 'red', 'peppers', 'photograph', 'genuine'],
@@ -84,8 +79,6 @@ app.get("/urls", passport.authenticate('session'), (req, res) => {
         error: err.message
       });
     });
-
-  
 
 });
 

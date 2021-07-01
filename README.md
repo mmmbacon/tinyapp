@@ -1,10 +1,11 @@
 # tinyapp
+##https://tinyapp-mmmbacon.herokuapp.com/
 
 ## About
 
-```tinyapp``` is a URL shortener powered by NodeJS, Express, EJS Template engine, and Bootstrap. It was created for the Lightouse Labs Web Developer Bootcamp in 2021.
+```tinyapp``` is a URL shortener powered by NodeJS, Express, EJS Template engine, PostgreSQL and Bootstrap. It is deployed to Heroku. This app is a technical demonstration of my skills using the above technologies.
 
-## Lets Get Started
+## Lets Get Started (Installing Locally)
 
 ### Install Things First
 

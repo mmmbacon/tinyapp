@@ -109,12 +109,13 @@ app.get("/urls/:shortURL", passport.authenticate('session'), (req, res) => {
     return res.status(401).render('error', { title: 'Error 401', message: 'Unauthorized. Please log in.'});
   }
 
+  
   getUrl(req.params.shortURL)
     .then((urls) => urls.rows[0])
     .then((url) => {
       const templateVars = {
-        short_url: url.short_url,
-        long_url: url.long_url,
+        shortUrl: url.short_url,
+        longUrl: url.long_url,
         username: req.user.username,
         email: req.user.email,
       };
@@ -129,15 +130,6 @@ app.get("/urls/:shortURL", passport.authenticate('session'), (req, res) => {
     });
 
   
-});
-
-app.get("/u/:shortURL", (req, res) => {
-
-  if (!urlDatabase[req.params.shortURL]) {
-    return res.status(401).render('error', { title: 'Error 404', message: 'URL Not Found.'});
-  }
-
-  res.redirect(urlDatabase[req.params.shortURL].longURL);
 });
 
 app.get("/login", (req, res) => {
@@ -170,7 +162,7 @@ app.post("/urls", passport.authenticate('session'), (req, res) => {
 
   createUrl(req.body.longUrl, req.user.id)
     .then((url) => url.rows[0])
-    .then((url)=>{
+    .then(()=>{
       return res.send("Success");
     })
     .catch((err) => {
@@ -219,7 +211,7 @@ app.post("/urls/:id", passport.authenticate('session'), (req, res) => {
 
   updateUrl(req.params.id, req.user.id)
     .then((urls) => urls.rows[0])
-    .then((url) => {
+    .then(() => {
       return res.send("Success");
     })
     .catch((err) => {

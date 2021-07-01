@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "start": "./node_modules/.bin/nodemon -L express_server.js",
+    "start": "node -L express_server.js",
     "dbreset" : "psql tinyapp -h localhost -d tinyapp-development -f db/schema/01_users_urls.sql"
   },
   "repository": {

@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import {
-  BROWSER_USER_COOKIE,
-  BROWSER_USER_HEADER,
-  browserUserCookieOptions,
-} from "@/lib/browser-user.constants";
+
+const BROWSER_USER_COOKIE = "tinyapp_browser";
+const BROWSER_USER_HEADER = "x-tinyapp-browser";
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 export function middleware(request: NextRequest) {
   const existing = request.cookies.get(BROWSER_USER_COOKIE)?.value?.trim();
@@ -18,11 +17,13 @@ export function middleware(request: NextRequest) {
   });
 
   if (!existing) {
-    response.cookies.set(
-      BROWSER_USER_COOKIE,
-      token,
-      browserUserCookieOptions()
-    );
+    response.cookies.set(BROWSER_USER_COOKIE, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: COOKIE_MAX_AGE,
+    });
   }
 
   return response;

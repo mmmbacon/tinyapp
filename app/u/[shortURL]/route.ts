@@ -2,6 +2,8 @@ import { getOrCreateBrowserUserId } from "@/lib/users";
 import { getUrlForRedirect } from "@/lib/urls";
 import { redirect } from "next/navigation";
 
+export const runtime = "nodejs";
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ shortURL: string }> }

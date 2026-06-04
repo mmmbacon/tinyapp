@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+// Keep in sync with lib/browser-user.constants.ts (middleware cannot import @/lib on Vercel Edge).
 const BROWSER_USER_COOKIE = "tinyapp_browser";
 const BROWSER_USER_HEADER = "x-tinyapp-browser";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;

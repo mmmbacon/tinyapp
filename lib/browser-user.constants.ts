@@ -1,3 +1,4 @@
+// Keep in sync with middleware.ts (Edge middleware cannot import this file on Vercel).
 export const BROWSER_USER_COOKIE = "tinyapp_browser";
 export const BROWSER_USER_HEADER = "x-tinyapp-browser";
 

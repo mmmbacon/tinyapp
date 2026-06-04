@@ -1,80 +1,97 @@
-# tinyapp
-## https://tinyapp-mmmbacon.herokuapp.com/
+# TinyApp
 
-## About
+A tiny URL shortener built with **Next.js 15**, **Auth.js**, **Drizzle ORM**, and **Neon Postgres**, deployed on **Vercel**.
 
-```tinyapp``` is a URL shortener powered by NodeJS, Express, EJS Template engine, PostgreSQL and Bootstrap. It is deployed to Heroku. This app is a technical demonstration of my skills using the above technologies.
+## Features
 
-## Lets Get Started (Installing Locally)
+- Register and log in with email and password
+- Create, edit, and delete short URLs
+- Public redirects at `/u/:shortURL`
+- Portfolio-friendly UI preserved from the original TinyApp
 
-### Install Things First
+## Local development
 
-```$ npm install```
+### Prerequisites
 
-### Run the server
+- Node.js 20+
+- A [Neon](https://neon.tech) database (free tier)
 
-```npm start```
+### Setup
 
-### Dependencies:
+1. Install dependencies:
 
-```express```
+   ```bash
+   npm install
+   ```
 
-```body-parser```
+2. Copy environment variables:
 
-```cookie-session```
+   ```bash
+   cp .env.example .env.local
+   ```
 
-```serve-favicon```
+3. Set values in `.env.local`:
 
-```morgan```
+   - `DATABASE_URL` — Neon connection string
+   - `AUTH_SECRET` — run `openssl rand -base64 32`
+   - `AUTH_URL` — `http://localhost:3000`
 
-```bcrypt```
+4. Push the schema to your database:
 
-```bootstrap-icons```
+   ```bash
+   npm run db:push
+   ```
 
-### Testing Dependencies:
+   This runs `scripts/db-setup.mjs` (node-postgres), which is reliable on Windows. Use Neon’s **direct** connection string (not the `-pooler` host) in `.env` or `.env.local`. Optional: `npm run db:push:drizzle` uses drizzle-kit (needs WebSockets).
 
-```mocha```
+5. Start the dev server:
 
-```chai```
+   ```bash
+   npm run dev
+   ```
 
-```chai-http```
+Open [http://localhost:3000](http://localhost:3000).
 
-### Utilities:
+## Scripts
 
- ```nodemon```
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start Next.js dev server |
+| `npm run build` | Production build |
+| `npm run start` | Run production server locally |
+| `npm run lint` | ESLint |
+| `npm test` | Vitest unit tests |
+| `npm run db:push` | Apply Drizzle schema to the database |
+| `npm run db:generate` | Generate SQL migrations |
+| `npm run db:migrate` | Run migrations |
 
-## Page Examples
+## Deploy to Vercel
 
-### Home Page
-!["Home Page"](https://user-images.githubusercontent.com/8649801/114969728-3afcca00-9e36-11eb-876e-226f0cdeb4d5.png)
+1. Push this repo to GitHub.
+2. Import the project in [Vercel](https://vercel.com).
+3. Add environment variables in the Vercel project settings:
 
-### Registration Page
-!["Registration Page"](https://user-images.githubusercontent.com/8649801/114969778-4fd95d80-9e36-11eb-95d6-482ee4e8fea2.png)
+   | Variable | Value |
+   |----------|--------|
+   | `DATABASE_URL` | Neon connection string |
+   | `AUTH_SECRET` | Long random secret |
+   | `AUTH_URL` | `https://your-app.vercel.app` |
 
-### Login Page
-!["Login Page"](https://user-images.githubusercontent.com/8649801/114969819-62539700-9e36-11eb-86dc-6f1fd5521955.png)
+4. Deploy. After the first deploy, run `npm run db:push` locally against your production Neon branch (or use Neon's SQL editor with `drizzle/migrations/0000_initial.sql`).
 
-### Privacy Policy Page
-!["Privacy Policy Page"](https://user-images.githubusercontent.com/8649801/114970484-c4f96280-9e37-11eb-80fb-dadd3a231f78.png)
+Vercel will run `next build` automatically on each push.
 
-### User URLs Page (Successful Login)
-!["User URLs"](https://user-images.githubusercontent.com/8649801/114969882-8616dd00-9e36-11eb-83c3-7400ac63a318.png)
+## Project structure
 
-### User URLs Page (Populated URL Table)
-!["Populated URL Table"](https://user-images.githubusercontent.com/8649801/114970312-6df38d80-9e37-11eb-9310-90579456e482.png)
+```text
+app/           # App Router pages and API routes
+components/    # React UI components
+drizzle/       # Schema and migrations
+lib/           # Database helpers and auth utilities
+auth.ts        # Auth.js configuration
+middleware.ts  # Protects /urls/*
+```
 
-### Bad Login
-!["Bad Login Page"](https://user-images.githubusercontent.com/8649801/114969929-9d55ca80-9e36-11eb-9c87-10c37a5a46da.png)
+## License
 
-### URL Creation Page
-!["URL Creation Page"](https://user-images.githubusercontent.com/8649801/114969960-acd51380-9e36-11eb-8dfa-ca01f9b21dba.png)
-
-### Edit URL Page
-!["Edit URL Page"](https://user-images.githubusercontent.com/8649801/114969974-b52d4e80-9e36-11eb-9ebb-04f9b2e97c2c.png)
-
-### 401 Unauthorized
-!["401 Unauthorized"](https://user-images.githubusercontent.com/8649801/114970006-caa27880-9e36-11eb-97f3-782b7642ac9e.png)
-
-
-
-
+ISC

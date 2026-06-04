@@ -1,50 +1,47 @@
 {
-  "name": "@mmmbacon/tinyapp",
-  "version": "1.0.0",
-  "description": "A tiny URL Application",
-  "main": "index.js",
+  "name": "tinyapp",
+  "version": "2.0.0",
+  "private": true,
   "scripts": {
-    "test": "mocha",
-    "start": "node express_server.js",
-    "dbreset" : "psql tinyapp -h localhost -d tinyapp-development -f db/schema/01_users_urls.sql"
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "node scripts/db-setup.mjs",
+    "db:push:drizzle": "drizzle-kit push",
+    "test": "vitest run"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mmmbacon/tinyapp.git"
-  },
-  "keywords": [
-    "tiny",
-    "url",
-    "shortener",
-    "app"
-  ],
-  "author": "@mmmbacon",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/mmmbacon/tinyapp/issues"
-  },
-  "homepage": "https://github.com/mmmbacon/tinyapp#readme",
   "dependencies": {
-    "bcrypt": "^5.0.1",
-    "body-parser": "^1.19.0",
-    "bootstrap-icons": "^1.4.1",
-    "cookie-session": "^1.4.0",
-    "dotenv": "^10.0.0",
-    "ejs": "^3.1.6",
-    "email-validator": "^2.0.4",
-    "express": "^4.17.1",
-    "express-session": "^1.17.2",
-    "morgan": "^1.10.0",
-    "passport": "^0.4.1",
-    "passport-local": "^1.0.0",
-    "pg": "^8.6.0",
-    "serve-favicon": "^2.5.0"
+    "@neondatabase/serverless": "^0.10.4",
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.8",
+    "drizzle-orm": "^0.45.2",
+    "next": "^15.5.19",
+    "next-auth": "^5.0.0-beta.25",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.24.1"
+  },
+  "overrides": {
+    "esbuild": "^0.25.0",
+    "postcss": "^8.5.10"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
-    "chai-http": "^4.3.0",
-    "eslint": "^7.29.0",
-    "mocha": "^8.3.2",
-    "nodemon": "^2.0.7"
+    "@eslint/eslintrc": "^3.2.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.10.7",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "@types/ws": "^8.18.1",
+    "dotenv": "^16.4.7",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9.18.0",
+    "eslint-config-next": "^15.5.19",
+    "pg": "^8.13.3",
+    "typescript": "^5.7.3",
+    "vitest": "^4.1.8",
+    "ws": "^8.18.0"
   }
 }

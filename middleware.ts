@@ -4,7 +4,7 @@ import {
   BROWSER_USER_COOKIE,
   BROWSER_USER_HEADER,
   browserUserCookieOptions,
-} from "@/lib/browser-user";
+} from "@/lib/browser-user.constants";
 
 export function middleware(request: NextRequest) {
   const existing = request.cookies.get(BROWSER_USER_COOKIE)?.value?.trim();

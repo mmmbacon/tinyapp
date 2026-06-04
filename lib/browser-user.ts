@@ -1,19 +1,15 @@
 import { cookies, headers } from "next/headers";
+import {
+  BROWSER_USER_COOKIE,
+  BROWSER_USER_HEADER,
+} from "@/lib/browser-user.constants";
 
-export const BROWSER_USER_COOKIE = "tinyapp_browser";
-export const BROWSER_USER_HEADER = "x-tinyapp-browser";
-
-export const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
-
-export function browserUserCookieOptions() {
-  return {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax" as const,
-    path: "/",
-    maxAge: COOKIE_MAX_AGE,
-  };
-}
+export {
+  BROWSER_USER_COOKIE,
+  BROWSER_USER_HEADER,
+  browserUserCookieOptions,
+  COOKIE_MAX_AGE,
+} from "@/lib/browser-user.constants";
 
 export async function getBrowserToken(): Promise<string | null> {
   const cookieStore = await cookies();

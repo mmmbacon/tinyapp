@@ -1,14 +1,14 @@
 import Link from "next/link";
-import HeaderMini from "@/components/HeaderMini";
+import Header from "@/components/Header";
 
 export default function NotFound() {
   return (
     <>
-      <HeaderMini />
-      <main className="container text-center" style={{ marginTop: 125 }}>
+      <Header />
+      <main className="container text-center tiny-page pt-4">
         <h1 className="title">404</h1>
         <p className="subtitle">Page not found</p>
-        <Link href="/" className="btn btn-primary">
+        <Link href="/" className="btn btn-tiny">
           Go home
         </Link>
       </main>

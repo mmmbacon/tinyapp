@@ -46,7 +46,7 @@ export default function AuthForm({
       >
         <div className="row">
           <div className="col d-flex flex-column align-items-center">
-            <div className="col d-flex flex-column align-items-center bg-primary text-light py-3 context-card position-relative">
+            <div className="col d-flex flex-column align-items-center tiny-hero py-3 context-card position-relative">
               <div style={{ height: 75 }} />
               <h1 className="position-absolute text-center px-4 title title-animated">
                 {title}
@@ -83,7 +83,7 @@ export default function AuthForm({
                 ) : null}
                 {extraLinks}
                 <button
-                  className="btn btn-warning text-primary my-2"
+                  className="btn btn-tiny my-2"
                   type="submit"
                   disabled={pending}
                 >
@@ -91,7 +91,7 @@ export default function AuthForm({
                 </button>
               </form>
             </div>
-            <div className="position-absolute text-end text-primary quip">
+            <div className="position-absolute text-end quip">
               <i>{quip}</i>
             </div>
           </div>

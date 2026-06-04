@@ -2,8 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { users } from "@/drizzle/schema";
 import { hashPassword } from "@/lib/password";
-
-const DEFAULT_USER_EMAIL = "tinyapp@system.local";
+import { getBrowserToken } from "@/lib/browser-user";
 
 export async function getUserByEmail(email: string) {
   const rows = await db
@@ -26,6 +25,43 @@ export async function getUserById(id: number) {
   return rows[0] ?? null;
 }
 
+export async function getUserByBrowserToken(token: string) {
+  const rows = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.browserToken, token))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
+export async function createBrowserUser(token: string): Promise<number> {
+  const hashed = await hashPassword(crypto.randomUUID());
+  const inserted = await db
+    .insert(users)
+    .values({
+      email: `browser-${token}@tinyapp.local`,
+      password: hashed,
+      browserToken: token,
+    })
+    .returning({ id: users.id });
+
+  return inserted[0].id;
+}
+
+export async function getOrCreateBrowserUserId(): Promise<number> {
+  const token = await getBrowserToken();
+  if (!token) {
+    throw new Error("Browser session token is missing");
+  }
+
+  const user = await getUserByBrowserToken(token);
+  if (user) {
+    return user.id;
+  }
+
+  return createBrowserUser(token);
+}
+
 export async function createUser(
   email: string,
   password: string
@@ -43,19 +79,4 @@ export async function createUser(
     .returning({ id: users.id, email: users.email });
 
   return inserted[0];
-}
-
-export async function getOrCreateDefaultUserId(): Promise<number> {
-  const existing = await getUserByEmail(DEFAULT_USER_EMAIL);
-  if (existing) {
-    return existing.id;
-  }
-
-  const hashed = await hashPassword(crypto.randomUUID());
-  const inserted = await db
-    .insert(users)
-    .values({ email: DEFAULT_USER_EMAIL, password: hashed })
-    .returning({ id: users.id });
-
-  return inserted[0].id;
 }

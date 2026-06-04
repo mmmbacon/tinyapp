@@ -1,5 +1,5 @@
 import { getUrlsForUser } from "@/lib/urls";
-import { getOrCreateDefaultUserId } from "@/lib/users";
+import { getOrCreateBrowserUserId } from "@/lib/users";
 import Header from "@/components/Header";
 import Alert from "@/components/Alert";
 import UrlTable from "@/components/UrlTable";
@@ -11,7 +11,7 @@ type PageProps = {
 };
 
 export default async function UrlsPage({ searchParams }: PageProps) {
-  const userId = await getOrCreateDefaultUserId();
+  const userId = await getOrCreateBrowserUserId();
   const urls = await getUrlsForUser(userId);
   const params = await searchParams;
 
@@ -20,10 +20,12 @@ export default async function UrlsPage({ searchParams }: PageProps) {
   return (
     <>
       <Header />
-      <main>
+      <main className="tiny-page">
         <Alert success={!params.error} message={message} />
-        <h3 className="m-4">My URLs</h3>
-        <UrlTable urls={urls} />
+        <h3 className="m-4 fw-light">My URLs</h3>
+        <div className="tiny-panel mx-3 mb-4">
+          <UrlTable urls={urls} />
+        </div>
       </main>
     </>
   );

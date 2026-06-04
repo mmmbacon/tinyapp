@@ -19,14 +19,14 @@ export default async function LoginPage() {
         <>
           <p className="mb-0">
             <small>
-              <Link href="/register" className="text-light">
+              <Link href="/register" className="tiny-muted">
                 Register
               </Link>
             </small>
           </p>
           <p className="mb-0">
             <small>
-              <Link href="/privacy" className="text-light">
+              <Link href="/privacy" className="tiny-muted">
                 -&gt; Read the privacy policy
               </Link>
             </small>

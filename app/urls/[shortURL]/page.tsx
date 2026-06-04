@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getUrlForUser } from "@/lib/urls";
-import { getOrCreateDefaultUserId } from "@/lib/users";
+import { getOrCreateBrowserUserId } from "@/lib/users";
 import Header from "@/components/Header";
 import { updateUrlAction } from "@/app/actions/urls";
 
@@ -13,7 +13,7 @@ type PageProps = {
 };
 
 export default async function EditUrlPage({ params, searchParams }: PageProps) {
-  const userId = await getOrCreateDefaultUserId();
+  const userId = await getOrCreateBrowserUserId();
   const { shortURL } = await params;
   const url = await getUrlForUser(shortURL, userId);
   const query = await searchParams;
@@ -25,7 +25,7 @@ export default async function EditUrlPage({ params, searchParams }: PageProps) {
   return (
     <>
       <Header />
-      <div className="card text-center">
+      <div className="card text-center tiny-panel-raised mx-3 my-4">
         <div className="card-header" />
         <div className="card-body">
           {query.error ? (
@@ -56,7 +56,7 @@ export default async function EditUrlPage({ params, searchParams }: PageProps) {
               defaultValue={url.longUrl}
               required
             />
-            <button className="btn btn-primary ms-3" type="submit">
+            <button className="btn btn-tiny ms-3" type="submit">
               Submit
             </button>
           </form>

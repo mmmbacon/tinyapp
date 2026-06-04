@@ -25,7 +25,7 @@ export default async function RegisterPage() {
           </p>
           <p className="mb-2">
             <small>
-              <Link href="/privacy" className="text-light">
+              <Link href="/privacy" className="tiny-muted">
                 -&gt; Read the privacy policy
               </Link>
             </small>

@@ -9,6 +9,7 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
+  browserToken: varchar("browser_token", { length: 64 }).unique(),
 });
 
 export const urls = pgTable("urls", {

@@ -2,36 +2,31 @@ import Link from "next/link";
 import SocialMedia from "@/components/SocialMedia";
 import ShortenForm from "@/components/ShortenForm";
 
-export const dynamic = "force-dynamic";
-
 export default function HomePage() {
   return (
     <>
-      <SocialMedia />
-      <main>
+      <main className="home-page position-relative">
+        <Link href="/urls" className="home-my-urls">
+          My URLs
+        </Link>
         <div
           className="container d-flex justify-content-center align-items-center"
           style={{ height: "100vh" }}
         >
           <div className="row">
             <div className="col d-flex flex-column align-items-center hero-wrap">
-              <div className="col d-flex flex-column align-items-center bg-primary text-light hero-card position-relative">
-                <div style={{ height: 75 }} />
-                <h1 className="position-absolute text-center px-4 title title-animated hero-title">
-                  TinyApp
-                </h1>
-                <h4 className="mb-3 subtitle">The Tiny URL Shortener</h4>
+              <div className="col d-flex flex-column align-items-center hero-card position-relative">
+                <div className="hero-header text-center w-100">
+                  <div className="hero-title-wrap">
+                    <h1 className="title title-rotated hero-title">TinyApp</h1>
+                    <span className="quip title-rotated">
+                      &ldquo;its so cute!&rdquo;
+                    </span>
+                  </div>
+                  <h4 className="hero-tagline">The Tiny URL Shortener</h4>
+                </div>
                 <ShortenForm />
-                <p className="mb-0">
-                  <small>
-                    <Link href="/privacy" className="text-light">
-                      -&gt; Read the privacy policy
-                    </Link>
-                  </small>
-                </p>
-              </div>
-              <div className="text-end text-primary quip">
-                <i>it&apos;s so tiny!</i>
+                <SocialMedia />
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 export default function PrivacyContent() {
   return (
-    <section className="container">
-      <div className="col" style={{ marginTop: 125 }}>
+    <section className="container pb-5">
+      <div className="col tiny-panel p-4 p-md-5">
         <h1>Privacy Policy</h1>
         <p>
           TinyApp is a small URL shortener. We built it to be useful, not to

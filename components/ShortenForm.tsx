@@ -2,19 +2,17 @@ import { createUrlAction } from "@/app/actions/urls";
 
 export default function ShortenForm() {
   return (
-    <form action={createUrlAction} className="form-inline d-flex">
+    <form action={createUrlAction} className="shorten-form d-flex flex-column align-items-center gap-2 w-100">
       <input
-        className="form-control"
+        className="form-control form-control-glass w-100"
         name="longUrl"
         type="url"
         placeholder="https://example.com"
-        style={{ border: "none", borderRadius: 0 }}
         autoFocus
         required
       />
-      <button className="btn btn-outline-primary text-light my-2" type="submit">
-        GO
+      <button className="btn btn-tiny-outline" type="submit">
+        Tinyfy
       </button>
-    </form>
-  );
+    </form>  );
 }

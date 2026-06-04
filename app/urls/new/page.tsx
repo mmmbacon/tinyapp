@@ -13,7 +13,7 @@ export default async function NewUrlPage({ searchParams }: PageProps) {
   return (
     <>
       <Header />
-      <main style={{ margin: "1em" }}>
+      <main className="tiny-page" style={{ margin: "1em" }}>
         {params.error ? (
           <div className="alert alert-danger" role="alert">
             {decodeURIComponent(params.error)}
@@ -35,7 +35,7 @@ export default async function NewUrlPage({ searchParams }: PageProps) {
               autoFocus
               required
             />
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-tiny">
               Submit
             </button>
           </div>

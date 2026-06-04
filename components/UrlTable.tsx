@@ -12,7 +12,7 @@ type UrlTableProps = {
 
 export default function UrlTable({ urls }: UrlTableProps) {
   return (
-    <table className="table">
+    <table className="table table-hover mb-0">
       <thead>
         <tr>
           <th scope="col" className="ps-4">

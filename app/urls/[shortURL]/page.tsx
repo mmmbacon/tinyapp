@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { auth } from "@/auth";
 import { getUrlForUser } from "@/lib/urls";
+import { getOrCreateDefaultUserId } from "@/lib/users";
 import Header from "@/components/Header";
 import { updateUrlAction } from "@/app/actions/urls";
 
@@ -13,8 +13,7 @@ type PageProps = {
 };
 
 export default async function EditUrlPage({ params, searchParams }: PageProps) {
-  const session = await auth();
-  const userId = Number(session!.user!.id);
+  const userId = await getOrCreateDefaultUserId();
   const { shortURL } = await params;
   const url = await getUrlForUser(shortURL, userId);
   const query = await searchParams;
@@ -25,7 +24,7 @@ export default async function EditUrlPage({ params, searchParams }: PageProps) {
 
   return (
     <>
-      <Header email={session?.user?.email} />
+      <Header />
       <div className="card text-center">
         <div className="card-header" />
         <div className="card-body">

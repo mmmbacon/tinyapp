@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import Header from "@/components/Header";
 import { createUrlAction } from "@/app/actions/urls";
 
@@ -9,12 +8,11 @@ type PageProps = {
 };
 
 export default async function NewUrlPage({ searchParams }: PageProps) {
-  const session = await auth();
   const params = await searchParams;
 
   return (
     <>
-      <Header email={session?.user?.email} />
+      <Header />
       <main style={{ margin: "1em" }}>
         {params.error ? (
           <div className="alert alert-danger" role="alert">

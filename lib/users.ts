@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { users } from "@/drizzle/schema";
 import { hashPassword } from "@/lib/password";
 
+const DEFAULT_USER_EMAIL = "tinyapp@system.local";
+
 export async function getUserByEmail(email: string) {
   const rows = await db
     .select()
@@ -41,4 +43,19 @@ export async function createUser(
     .returning({ id: users.id, email: users.email });
 
   return inserted[0];
+}
+
+export async function getOrCreateDefaultUserId(): Promise<number> {
+  const existing = await getUserByEmail(DEFAULT_USER_EMAIL);
+  if (existing) {
+    return existing.id;
+  }
+
+  const hashed = await hashPassword(crypto.randomUUID());
+  const inserted = await db
+    .insert(users)
+    .values({ email: DEFAULT_USER_EMAIL, password: hashed })
+    .returning({ id: users.id });
+
+  return inserted[0].id;
 }

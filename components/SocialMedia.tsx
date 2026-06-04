@@ -1,12 +1,4 @@
-import Link from "next/link";
-import { logoutAction } from "@/app/actions/auth";
-
-type SocialMediaProps = {
-  loggedIn: boolean;
-  email?: string | null;
-};
-
-export default function SocialMedia({ loggedIn, email }: SocialMediaProps) {
+export default function SocialMedia() {
   return (
     <header className="container-fluid d-flex position-absolute">
       <div className="col text-primary p-3" style={{ top: 0 }}>
@@ -24,54 +16,6 @@ export default function SocialMedia({ loggedIn, email }: SocialMediaProps) {
           made by @mmmbacon
         </a>
       </div>
-
-      {loggedIn && (
-        <div className="col text-primary text-end p-3">
-          {email ? (
-            <>
-              <PersonIcon fill="#0d6efd" />
-              <Link href="/urls" className="text-primary">
-                {email}
-              </Link>
-              <form action={logoutAction} className="d-inline ms-2">
-                <button type="submit" className="btn btn-warning text-primary">
-                  Logout
-                </button>
-              </form>
-            </>
-          ) : (
-            <>
-              <PersonIcon fill="#0d6efd" />
-              <Link href="/login" className="text-primary">
-                Login
-              </Link>
-              <Link href="/register" className="text-primary ms-2">
-                Register
-              </Link>
-            </>
-          )}
-        </div>
-      )}
     </header>
-  );
-}
-
-function PersonIcon({ fill }: { fill: string }) {
-  return (
-    <svg
-      className="me-2"
-      xmlns="http://www.w3.org/2000/svg"
-      width="25"
-      height="25"
-      fill={fill}
-      viewBox="0 0 16 16"
-      aria-hidden
-    >
-      <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-      <path
-        fillRule="evenodd"
-        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-      />
-    </svg>
   );
 }

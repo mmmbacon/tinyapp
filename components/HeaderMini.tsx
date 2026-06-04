@@ -5,7 +5,7 @@ export default function HeaderMini() {
     <header>
       <nav className="navbar fixed-top navbar-dark bg-primary">
         <Link
-          className="navbar-brand"
+          className="navbar-brand ms-3"
           href="/"
           style={{
             fontFamily: "'Fugaz One', cursive",
